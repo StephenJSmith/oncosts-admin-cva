@@ -1,0 +1,15 @@
+
+.container {
+  padding: 20px 50px;
+  background-color: #DDD;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 800px;
+
+  font-family:Verdana, Geneva, Tahoma, sans-serif
+}
+
+h1{
+  margin-top: 10px;
+  margin-bottom: 20px;
+}

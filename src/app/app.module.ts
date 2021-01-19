@@ -2,10 +2,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
+import { OncostsAdminComponent } from './oncosts-admin/oncosts-admin.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    OncostsAdminComponent
   ],
   imports: [
     BrowserModule
