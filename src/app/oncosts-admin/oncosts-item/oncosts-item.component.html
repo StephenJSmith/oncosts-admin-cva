@@ -1,0 +1,33 @@
+<div class="wrapper">
+  <form [formGroup]="form">
+    <div class="input-line">
+      <input
+        formControlName="itemType"
+        class="item-type"
+        [placeholder]="placeholderText"
+      />
+
+      <input class="amount" formControlName="amount" /> %
+
+      <!-- <button (click)="onDelete()">Delete</button> -->
+    </div>
+
+    <div class="error-lines">
+      <div *ngIf="canShowItemTypeError" class="invalid-feedback">
+        <div *ngIf="canShowItemTypeRequiredError">
+          Required - {{ this.placeholderText }}
+        </div>
+        <div *ngIf="canShowItemTypeDuplicatedError">
+          {{ duplicatedErrorText }}
+        </div>
+      </div>
+
+      <div *ngIf="canShowAmountError" class="invalid-feedback">
+        <div *ngIf="canShowAmountRequiredError">Amount requred</div>
+        <div *ngIf="canShowMinAmountError">
+          The amount must be greater than zero
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

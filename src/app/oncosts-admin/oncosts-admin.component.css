@@ -1,0 +1,54 @@
+.populate-button {
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.explanation {
+  margin-left: 30px;
+  font-style: italic;
+  font-size: .8em;
+}
+
+.label {
+  width: 200px;
+  display: inline-block;
+  margin-top: .5em;
+}
+
+input.amount {
+  width: 75px;
+  margin-right: 10px;
+}
+
+.category {
+  margin-top: 30px;
+}
+
+.category button {
+  margin-left: 35px;
+}
+
+.category.label {
+  font-weight: bold;
+}
+
+.save-changes {
+  margin-top: 20px;
+
+  margin-right: 10px;
+}
+
+input {
+  border-radius: 3px;
+  padding: 5px;
+}
+
+button {
+  padding: 5px 10px;
+}
+
+pre {
+  display: inline-block;
+  margin-left: 50px;
+  color: blue;
+}

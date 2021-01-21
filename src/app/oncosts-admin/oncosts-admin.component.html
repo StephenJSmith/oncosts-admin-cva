@@ -1,1 +1,98 @@
-<p>oncosts-admin works!</p>
+<form [formGroup]="adminForm">
+  <div class="populate-button">
+    <button (click)="populateOncostsAdmin()">Populate</button>
+    <span class="explanation">
+      (Simulate opening the form with existing data)
+    </span>
+  </div>
+
+  <div>
+    <div class="label">Casual Loading:</div>
+    <input class="amount" formControlName="casualLoading" />%
+  </div>
+
+  <div>
+    <div class="label">Superannuation:</div>
+    <input class="amount" formControlName="superannuation" />%
+  </div>
+
+  <div class="category">
+    <div class="category label">Taxes</div>
+    <button [disabled]="!isTaxesItemsValid" (click)="addTaxesItem()">
+      + Add Item
+    </button>
+
+    <pre>isTaxesItemsValid: {{ isTaxesItemsValid }}</pre>
+
+    <div>
+      <app-oncosts-item
+        formControlName="taxes"
+        placeholderText="Add a tax item"
+        [duplicatedErrorText]="duplicatedErrorText"
+      ></app-oncosts-item>
+    </div>
+  </div>
+
+  <div class="category">
+    <div class="category label">Superannuation</div>
+    <button [disabled]="!isSuperannuationItemsValid" (click)="addSuperannuationItem()">
+      + Add Item
+    </button>
+
+    <pre>isSuperannuationItemsValid: {{ isSuperannuationItemsValid }}</pre>
+
+    <div>
+      <app-oncosts-item
+        formControlName="superannuation"
+        placeholderText="Add a superannuation item"
+        [duplicatedErrorText]="duplicatedErrorText"
+      ></app-oncosts-item>
+    </div>
+  </div>
+
+  <div class="category">
+    <div class="category label">Other</div>
+    <button [disabled]="!isOtherItemsValid" (click)="addOtherItems()">
+      + Add Item
+    </button>
+
+    <pre>isOtherItemsValid: {{ isOtherItemsValid }}</pre>
+
+    <div>
+      <app-oncosts-item
+        formControlName="other"
+        placeholderText="Add an other item"
+        [duplicatedErrorText]="duplicatedErrorText"
+      ></app-oncosts-item>
+    </div>
+  </div>
+
+  <div>
+    <button
+      type="submit"
+      class="save-changes"
+      [disabled]="adminForm?.invalid"
+      (click)="onSaveChanges()"
+    >
+      Save changes
+    </button>
+    <button
+      class="cancel-button"
+      [disabled]="!adminForm?.dirty"
+      type="button"
+      (click)="onCancel()">
+      Cancel
+    </button>
+    <pre>adminForm.valid: {{ adminForm?.valid }}</pre>
+    <pre>adminForm.dirty: {{ adminForm?.dirty }}</pre>
+  </div>
+</form>
+
+<div class="explanation">
+  (Cancel - reverts back to last saved form details)
+</div>
+
+<pre>
+  {{ adminForm.value | json }}
+</pre>
+
