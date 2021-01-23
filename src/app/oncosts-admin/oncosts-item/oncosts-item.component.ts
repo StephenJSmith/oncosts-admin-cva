@@ -1,11 +1,8 @@
-import { ChangeDetectionStrategy, Component, forwardRef, Input, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, ControlValueAccessor, FormBuilder, FormControl, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validators } from '@angular/forms';
+import { EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, forwardRef, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AbstractControl, ControlValueAccessor, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-
-export interface OncostformValues {
-  itemType: string;
-  amount: number;
-}
+import { OncostsItem } from '../oncosts-item';
 
 @Component({
   selector: 'app-oncosts-item',
@@ -25,9 +22,12 @@ export interface OncostformValues {
     },
   ]
 })
-export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAccessor {
+export class OncostsItemComponent implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
+  @Input() oncostItem: OncostsItem;
+  @Input() oncostItems: OncostsItem[] = [];
   @Input() placeholderText: string;
   @Input() duplicatedErrorText: string;
+  @Output() deleteItem = new EventEmitter<number>();
 
   form: FormGroup;
   subscriptions: Subscription[] = [];
@@ -62,33 +62,41 @@ export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAcce
     return this.canShowAmountError && this.amountControl?.errors?.min;
   }
 
-  get value(): OncostformValues {
+  get value(): OncostsItem {
     return this.form.value;
   }
 
-  set value(value: OncostformValues) {
+  set value(value: OncostsItem) {
     this.form.setValue(value);
     this.onChange(value);
     this.onTouched();
   }
 
   get itemTypeControl(): AbstractControl {
-    return this.form.controls.itemType;
+    return this.form?.controls?.itemType;
   }
 
   get amountControl(): AbstractControl {
-    return this.form.controls.amount;
+    return this.form?.controls?.amount;
   }
 
   constructor(
     private fb: FormBuilder,
   ) { }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    this.validateForUniqueItemType();
+  }
+
   ngOnInit(): void {
     this.form = this.fb.group({
-      itemType: ['', [Validators.required]],
-      amount: [0, [Validators.required, Validators.min(0.01)]],
+      itemID: this.oncostItem.itemID,
+      itemType: [this.oncostItem.itemType,
+        [Validators.required]],
+      amount: [this.oncostItem.amount, [Validators.required, Validators.min(0.01)]],
     });
+
+    this.form.updateValueAndValidity();
 
     this.subscriptions.push(
       this.form.valueChanges.subscribe(value => {
@@ -96,10 +104,36 @@ export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAcce
         this.onTouched();
       })
     );
+
+    this.subscriptions.push(
+
+      this.itemTypeControl.valueChanges.subscribe(() => {
+        this.validateForUniqueItemType();
+      })
+    )
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
+  }
+
+  onDelete() {
+    this.deleteItem.emit(this.oncostItem.itemID);
+  }
+
+  private validateForUniqueItemType() {
+    return;
+    if (!this.oncostItems || !this.oncostItem || !this.itemTypeControl) { return; }
+
+    const index = this.oncostItems.findIndex(i =>
+      i.itemType === this.oncostItem.itemType
+      && i.itemID !== this.oncostItem.itemID);
+
+    if (index > -1) {
+      this.itemTypeControl.setErrors({ 'duplicated': true });
+    } else {
+      this.itemTypeControl.setErrors({ 'duplicated': null });
+    }
   }
 
   onChange: any = () => {};
@@ -118,8 +152,8 @@ export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAcce
     this.onTouched = fn;
   }
 
-  validate(c: AbstractControl): ValidationErrors | null {
-    return this.form.valid
+  validate(): ValidationErrors | null {
+    return this.form?.valid
       ? null
       : { item: { valid: false }}
   }

@@ -1,0 +1,27 @@
+<div class="category">
+  <div class="category label">
+    {{categoryName}}
+  </div>
+  <button [disabled]="!isOncostsCategoryValid" (click)="addOncostsItem()">
+    + Add Item
+  </button>
+
+  <pre>isOncostsCategoryValid: {{ isOncostsCategoryValid }}</pre>
+
+  <ng-container *ngFor="let oncostItem of oncostsItems"
+  [formGroup]="form">
+  <app-oncosts-item
+    [formControlName]="oncostItem.itemID"
+    [oncostItem]="oncostItem"
+    [oncostItems]="form.value"
+    [placeholderText]="placeholderText"
+    (deleteItem)="onDeleteItem($event)"
+  ></app-oncosts-item>
+</ng-container>
+
+<div *ngIf="form">
+  <pre>
+    {{form.value | json}}
+  </pre>
+</div>
+</div>

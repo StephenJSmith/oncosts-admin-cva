@@ -1,6 +1,6 @@
 import { ClassField } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-oncosts-admin',
@@ -17,12 +17,12 @@ export class OncostsAdminComponent implements OnInit {
     return this.adminForm.controls.taxes.valid;
   }
 
-  get isSuperannuationItemsValid(): boolean {
-    return this.adminForm.controls.superannuation.valid;
+  get isInsuranceItemsValid(): boolean {
+    return this.adminForm?.controls?.insurance?.valid;
   }
 
   get isOtherItemsValid(): boolean {
-    return this.adminForm.controls.other.valid;
+    return this.adminForm?.controls?.other?.valid;
   }
 
   constructor(
@@ -40,23 +40,18 @@ export class OncostsAdminComponent implements OnInit {
       taxes: [],
       insurance: [],
       other: [],
-    })
+    });
   }
 
   populateOncostsAdmin() {
 
   }
 
-  addTaxesItem() {
-
-  }
-
-  addSuperannuationItem() {
-
-  }
-
-  addOtherItems() {
-
+  createNewItem(): FormGroup {
+    return new FormGroup({
+      'itemType': new FormControl('', [Validators.required]),
+      'amount': new FormControl(0, [Validators.required, Validators.min(0.01)]),
+    });
   }
 
   onSaveChanges() {

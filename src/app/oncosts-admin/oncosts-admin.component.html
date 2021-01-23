@@ -16,56 +16,23 @@
     <input class="amount" formControlName="superannuation" />%
   </div>
 
-  <div class="category">
-    <div class="category label">Taxes</div>
-    <button [disabled]="!isTaxesItemsValid" (click)="addTaxesItem()">
-      + Add Item
-    </button>
+  <app-oncosts-category
+    formControlName="taxes"
+    categoryName="Taxes"
+    placeholderText="Add a tax item"
+  ></app-oncosts-category>
 
-    <pre>isTaxesItemsValid: {{ isTaxesItemsValid }}</pre>
+  <app-oncosts-category
+    formControlName="insurance"
+    categoryName="Insurance"
+    placeholderText="Add an insurance item"
+  ></app-oncosts-category>
 
-    <div>
-      <app-oncosts-item
-        formControlName="taxes"
-        placeholderText="Add a tax item"
-        [duplicatedErrorText]="duplicatedErrorText"
-      ></app-oncosts-item>
-    </div>
-  </div>
-
-  <div class="category">
-    <div class="category label">Superannuation</div>
-    <button [disabled]="!isSuperannuationItemsValid" (click)="addSuperannuationItem()">
-      + Add Item
-    </button>
-
-    <pre>isSuperannuationItemsValid: {{ isSuperannuationItemsValid }}</pre>
-
-    <div>
-      <app-oncosts-item
-        formControlName="superannuation"
-        placeholderText="Add a superannuation item"
-        [duplicatedErrorText]="duplicatedErrorText"
-      ></app-oncosts-item>
-    </div>
-  </div>
-
-  <div class="category">
-    <div class="category label">Other</div>
-    <button [disabled]="!isOtherItemsValid" (click)="addOtherItems()">
-      + Add Item
-    </button>
-
-    <pre>isOtherItemsValid: {{ isOtherItemsValid }}</pre>
-
-    <div>
-      <app-oncosts-item
-        formControlName="other"
-        placeholderText="Add an other item"
-        [duplicatedErrorText]="duplicatedErrorText"
-      ></app-oncosts-item>
-    </div>
-  </div>
+  <app-oncosts-category
+    formControlName="other"
+    categoryName="Other"
+    placeholderText="Add an other item"
+  ></app-oncosts-category>
 
   <div>
     <button
@@ -80,7 +47,8 @@
       class="cancel-button"
       [disabled]="!adminForm?.dirty"
       type="button"
-      (click)="onCancel()">
+      (click)="onCancel()"
+    >
       Cancel
     </button>
     <pre>adminForm.valid: {{ adminForm?.valid }}</pre>
@@ -95,4 +63,3 @@
 <pre>
   {{ adminForm.value | json }}
 </pre>
-
