@@ -15,7 +15,8 @@
     [oncostItem]="oncostItem"
     [oncostItems]="form.value"
     [placeholderText]="placeholderText"
-    duplicatedErrorText="Item type already exists. Please rename."
+    [isUniqueItemType]="isUniqueItemType"
+    [duplicatedErrorText]="duplicatedErrorText"
     (deleteItem)="onDeleteItem($event)"
   ></app-oncosts-item>
 </ng-container>

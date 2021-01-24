@@ -1,6 +1,6 @@
-import { EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { EventEmitter } from '@angular/core';
 import { ChangeDetectionStrategy, Component, forwardRef, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { AbstractControl, ControlValueAccessor, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, ControlValueAccessor, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { OncostsItem } from '../oncosts-item';
 
@@ -26,7 +26,8 @@ export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAcce
   @Input() oncostItem: OncostsItem;
   @Input() oncostItems: OncostsItem[] = [];
   @Input() placeholderText: string;
-  @Input() duplicatedErrorText: string;
+  @Input() isUniqueItemType = false;
+  @Input() duplicatedErrorText: string = 'Item type already exists. Please rename.';
   @Output() deleteItem = new EventEmitter<number>();
 
   form: FormGroup;
@@ -39,11 +40,13 @@ export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAcce
   }
 
   get canShowItemTypeRequiredError(): boolean | null | undefined {
-    return this.canShowItemTypeError && this.itemTypeControl?.errors?.required;
+    return this.canShowItemTypeError
+      && this.itemTypeControl?.errors?.required;
   }
 
   get canShowItemTypeDuplicatedError(): boolean | null | undefined {
-    return this.form?.errors?.duplicated;
+    return this.isUniqueItemType
+      && this.form?.errors?.duplicated;
   }
 
   get canShowAmountError(): boolean | null | undefined {
@@ -53,11 +56,13 @@ export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAcce
   }
 
   get canShowAmountRequiredError(): boolean | null | undefined {
-    return this.canShowAmountError && this.amountControl?.errors?.required;
+    return this.canShowAmountError
+      && this.amountControl?.errors?.required;
   }
 
   get canShowMinAmountError(): boolean | null | undefined {
-    return this.canShowAmountError && this.amountControl?.errors?.min;
+    return this.canShowAmountError
+      && this.amountControl?.errors?.min;
   }
 
   get value(): OncostsItem {
@@ -82,12 +87,17 @@ export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAcce
     private fb: FormBuilder,
   ) { }
 
-  validateFormUniqueness (control: AbstractControl) {
+  validateItemTypeNotDuplicated (control: AbstractControl) {
+    if (!this.isUniqueItemType) { return null; }
+
     const id = control.get('itemID').value;
     const itemType = control.get('itemType').value?.toLowerCase();
+    if (!itemType || !itemType.trim()) { return null; }
 
-    const otherItems = Object.values(this.oncostItems).filter(i => i.itemID !== id);
-    const index = otherItems.findIndex(i => i.itemType.toLocaleLowerCase() === itemType);
+    const otherItems = Object.values(this.oncostItems)
+      .filter(i => i.itemID !== id);
+    const index = otherItems.findIndex(i =>
+      i.itemType.toLocaleLowerCase() === itemType);
 
     return index < 0
       ? null
@@ -103,7 +113,7 @@ export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAcce
         ]],
       amount: [this.oncostItem.amount, [Validators.required, Validators.min(0.01)]],
     }, {
-      validator: this.validateFormUniqueness.bind(this)
+      validator: this.validateItemTypeNotDuplicated.bind(this)
     });
 
     this.form.updateValueAndValidity();

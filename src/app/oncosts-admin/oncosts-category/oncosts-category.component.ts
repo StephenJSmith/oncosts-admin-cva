@@ -26,6 +26,8 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   @Input() placeholderText: string;
   @Input() duplicatedErrorText = 'Item type already exists. Please rename.';
 
+  isUniqueItemType = true;
+
   oncostsItems: OncostsItem[] = [];
 
   form: FormGroup;

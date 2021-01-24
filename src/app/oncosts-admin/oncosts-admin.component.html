@@ -20,18 +20,21 @@
     formControlName="taxes"
     categoryName="Taxes"
     placeholderText="Add a tax item"
+    [duplicatedErrorText]="duplicatedErrorText"
   ></app-oncosts-category>
 
   <app-oncosts-category
     formControlName="insurance"
     categoryName="Insurance"
     placeholderText="Add an insurance item"
+    [duplicatedErrorText]="duplicatedErrorText"
   ></app-oncosts-category>
 
   <app-oncosts-category
     formControlName="other"
     categoryName="Other"
     placeholderText="Add an other item"
+    [duplicatedErrorText]="duplicatedErrorText"
   ></app-oncosts-category>
 
   <div>
