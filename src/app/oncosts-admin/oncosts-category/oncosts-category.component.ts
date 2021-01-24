@@ -54,6 +54,8 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   onDeleteItem(itemID: number) {
     this.oncostsItems = this.oncostsItems.filter(i => i.itemID !== itemID);
     this.form.removeControl(itemID.toString());
+
+    this.form.updateValueAndValidity();
   }
 
   validate(control: AbstractControl): ValidationErrors | null {

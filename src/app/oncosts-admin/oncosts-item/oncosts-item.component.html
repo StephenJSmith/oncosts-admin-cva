@@ -13,12 +13,14 @@
     </div>
 
     <div class="error-lines">
+      <div *ngIf="canShowItemTypeDuplicatedError"
+        class="invalid-feedback">
+        {{ duplicatedErrorText }}
+      </div>
+
       <div *ngIf="canShowItemTypeError" class="invalid-feedback">
         <div *ngIf="canShowItemTypeRequiredError">
           Required - {{ this.placeholderText }}
-        </div>
-        <div *ngIf="canShowItemTypeDuplicatedError">
-          {{ duplicatedErrorText }}
         </div>
       </div>
 

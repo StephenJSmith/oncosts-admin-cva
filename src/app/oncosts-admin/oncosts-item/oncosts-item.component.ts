@@ -1,6 +1,6 @@
 import { EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { ChangeDetectionStrategy, Component, forwardRef, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { AbstractControl, ControlValueAccessor, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, ControlValueAccessor, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { OncostsItem } from '../oncosts-item';
 
@@ -22,7 +22,7 @@ import { OncostsItem } from '../oncosts-item';
     },
   ]
 })
-export class OncostsItemComponent implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
+export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @Input() oncostItem: OncostsItem;
   @Input() oncostItems: OncostsItem[] = [];
   @Input() placeholderText: string;
@@ -43,9 +43,7 @@ export class OncostsItemComponent implements OnInit, OnChanges, OnDestroy, Contr
   }
 
   get canShowItemTypeDuplicatedError(): boolean | null | undefined {
-    return this.itemTypeControl
-      && this.itemTypeControl.invalid
-      && this.itemTypeControl?.errors?.unique;
+    return this.form?.errors?.duplicated;
   }
 
   get canShowAmountError(): boolean | null | undefined {
@@ -84,16 +82,28 @@ export class OncostsItemComponent implements OnInit, OnChanges, OnDestroy, Contr
     private fb: FormBuilder,
   ) { }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.validateForUniqueItemType();
+  validateFormUniqueness (control: AbstractControl) {
+    const id = control.get('itemID').value;
+    const itemType = control.get('itemType').value?.toLowerCase();
+
+    const otherItems = Object.values(this.oncostItems).filter(i => i.itemID !== id);
+    const index = otherItems.findIndex(i => i.itemType.toLocaleLowerCase() === itemType);
+
+    return index < 0
+      ? null
+      : { 'duplicated': true };
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
       itemID: this.oncostItem.itemID,
       itemType: [this.oncostItem.itemType,
-        [Validators.required]],
+        [
+          Validators.required,
+        ]],
       amount: [this.oncostItem.amount, [Validators.required, Validators.min(0.01)]],
+    }, {
+      validator: this.validateFormUniqueness.bind(this)
     });
 
     this.form.updateValueAndValidity();
@@ -104,13 +114,6 @@ export class OncostsItemComponent implements OnInit, OnChanges, OnDestroy, Contr
         this.onTouched();
       })
     );
-
-    this.subscriptions.push(
-
-      this.itemTypeControl.valueChanges.subscribe(() => {
-        this.validateForUniqueItemType();
-      })
-    )
   }
 
   ngOnDestroy(): void {
@@ -119,21 +122,6 @@ export class OncostsItemComponent implements OnInit, OnChanges, OnDestroy, Contr
 
   onDelete() {
     this.deleteItem.emit(this.oncostItem.itemID);
-  }
-
-  private validateForUniqueItemType() {
-    return;
-    if (!this.oncostItems || !this.oncostItem || !this.itemTypeControl) { return; }
-
-    const index = this.oncostItems.findIndex(i =>
-      i.itemType === this.oncostItem.itemType
-      && i.itemID !== this.oncostItem.itemID);
-
-    if (index > -1) {
-      this.itemTypeControl.setErrors({ 'duplicated': true });
-    } else {
-      this.itemTypeControl.setErrors({ 'duplicated': null });
-    }
   }
 
   onChange: any = () => {};
