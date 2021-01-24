@@ -39,6 +39,14 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
     return this.form.valid;
   }
 
+  get nextItemID(): number {
+    if (!this.oncostsItems) { return 1; }
+
+    return this.oncostsItems.length == 0
+      ? 1
+      : Math.max.apply(Math, this.oncostsItems.map(i => i.itemID)) + 1;
+  }
+
   constructor(
     private fb: FormBuilder
   ) { }
@@ -57,10 +65,10 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
     this.oncostsItems = this.oncostsItems.filter(i => i.itemID !== itemID);
     this.form.removeControl(itemID.toString());
 
-    this.form.updateValueAndValidity();
+    // TODO: Refresh all existing items for duplicated validation
   }
 
-  validate(control: AbstractControl): ValidationErrors | null {
+  validate(_: AbstractControl): ValidationErrors | null {
     return this.form.valid
       ? null
       : { invalidForm: { valid: false, message: 'invalid item' } };  }
@@ -79,13 +87,12 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   registerOnTouched(fn: any): void { }
 
   addOncostsItem() {
-    const maxItemID = this.oncostsItems.length == 0
-    ? 0
-    : Math.max.apply(Math, this.oncostsItems.map(i => i.itemID));
-
-    const newItem: OncostsItem = {itemID: maxItemID + 1, itemType: '', amount: 0 };
+    const newItem: OncostsItem = {
+      itemID: this.nextItemID,
+      itemType: '',
+      amount: 0
+    };
     this.oncostsItems.push(newItem);
-    //this.loadItems();
     this.addItemAsControl(newItem);
   }
 
@@ -98,8 +105,6 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
         amount: item.amount,
       })
     )
-
-    this.form.updateValueAndValidity();
   }
 
   private initialiseItems(oncostsItems: OncostsItem[]) {

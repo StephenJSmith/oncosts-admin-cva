@@ -1,4 +1,4 @@
-import { EventEmitter } from '@angular/core';
+import { AfterViewInit, ElementRef, EventEmitter, ViewChild } from '@angular/core';
 import { ChangeDetectionStrategy, Component, forwardRef, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -22,13 +22,15 @@ import { OncostsItem } from '../oncosts-item';
     },
   ]
 })
-export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAccessor {
+export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, ControlValueAccessor {
   @Input() oncostItem: OncostsItem;
   @Input() oncostItems: OncostsItem[] = [];
   @Input() placeholderText: string;
   @Input() isUniqueItemType = false;
   @Input() duplicatedErrorText: string = 'Item type already exists. Please rename.';
   @Output() deleteItem = new EventEmitter<number>();
+
+  @ViewChild('itemTypeInput') itemTypeInput: ElementRef;
 
   form: FormGroup;
   subscriptions: Subscription[] = [];
@@ -65,6 +67,13 @@ export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAcce
       && this.amountControl?.errors?.min;
   }
 
+  get isEmptyOncostItem(): boolean {
+    if (!this.oncostItem) { return false; }
+
+    return !this.oncostItem.itemType
+      && !this.oncostItem.amount;
+  }
+
   get value(): OncostsItem {
     return this.form.value;
   }
@@ -87,6 +96,36 @@ export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAcce
     private fb: FormBuilder,
   ) { }
 
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      itemID: this.oncostItem.itemID,
+      itemType: [this.oncostItem.itemType,
+        [
+          Validators.required,
+        ]],
+      amount: [this.oncostItem.amount, [Validators.required, Validators.min(0.01)]],
+    }, {
+      validator: this.validateItemTypeNotDuplicated.bind(this)
+    });
+
+    this.subscriptions.push(
+      this.form.valueChanges.subscribe(value => {
+        this.onChange(value);
+        this.onTouched();
+      })
+    );
+  }
+
+  ngAfterViewInit(): void {
+    if (this.isEmptyOncostItem) {
+      this.itemTypeInput.nativeElement.focus();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
+  }
+
   validateItemTypeNotDuplicated (control: AbstractControl) {
     if (!this.isUniqueItemType) { return null; }
 
@@ -102,32 +141,6 @@ export class OncostsItemComponent implements OnInit, OnDestroy, ControlValueAcce
     return index < 0
       ? null
       : { 'duplicated': true };
-  }
-
-  ngOnInit(): void {
-    this.form = this.fb.group({
-      itemID: this.oncostItem.itemID,
-      itemType: [this.oncostItem.itemType,
-        [
-          Validators.required,
-        ]],
-      amount: [this.oncostItem.amount, [Validators.required, Validators.min(0.01)]],
-    }, {
-      validator: this.validateItemTypeNotDuplicated.bind(this)
-    });
-
-    this.form.updateValueAndValidity();
-
-    this.subscriptions.push(
-      this.form.valueChanges.subscribe(value => {
-        this.onChange(value);
-        this.onTouched();
-      })
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
   }
 
   onDelete() {
