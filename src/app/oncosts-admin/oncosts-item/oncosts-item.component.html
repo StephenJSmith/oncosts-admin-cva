@@ -10,6 +10,10 @@
 
       <input class="amount" formControlName="amount" /> %
 
+      <button
+        [disabled]="form.invalid"
+        (click)="onAddAnotherItem()">+1</button>
+
       <button (click)="onDelete()">Delete</button>
     </div>
 

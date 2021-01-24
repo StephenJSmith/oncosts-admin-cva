@@ -28,6 +28,7 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
   @Input() placeholderText: string;
   @Input() isUniqueItemType = false;
   @Input() duplicatedErrorText: string = 'Item type already exists. Please rename.';
+  @Output() addAnotherItem = new EventEmitter<null>();
   @Output() deleteItem = new EventEmitter<number>();
 
   @ViewChild('itemTypeInput') itemTypeInput: ElementRef;
@@ -141,6 +142,12 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
     return index < 0
       ? null
       : { 'duplicated': true };
+  }
+
+  onAddAnotherItem() {
+    if (!this.form.valid) {return; }
+
+    this.addAnotherItem.emit();
   }
 
   onDelete() {
