@@ -15,6 +15,10 @@
         (click)="onAddAnotherItem()">+1</button>
 
       <button (click)="onDelete()">Delete</button>
+
+      <pre>
+        {{form.errors | json }}
+      </pre>
     </div>
 
     <div class="error-lines">

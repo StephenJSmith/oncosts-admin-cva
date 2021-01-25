@@ -1,6 +1,6 @@
 import { AfterViewInit, ElementRef, EventEmitter, ViewChild } from '@angular/core';
 import { ChangeDetectionStrategy, Component, forwardRef, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { AbstractControl, ControlValueAccessor, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, ControlValueAccessor, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validators, ValidatorFn } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { OncostsItem } from '../oncosts-item';
 
@@ -106,7 +106,7 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
         ]],
       amount: [this.oncostItem.amount, [Validators.required, Validators.min(0.01)]],
     }, {
-      validator: this.validateItemTypeNotDuplicated.bind(this)
+      validators: [this.validateItemTypeNotDuplicated.bind(this)],
     });
 
     this.subscriptions.push(

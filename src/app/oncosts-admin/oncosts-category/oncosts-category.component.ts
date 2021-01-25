@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, forwardRef, Output, OnDestroy, Input, EventEmitter } from '@angular/core';
 import { NG_VALUE_ACCESSOR, NG_VALIDATORS, FormBuilder, FormGroup, ControlValueAccessor, Validator, AbstractControl, ValidationErrors, FormControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { OncostsItem } from '../oncosts-item';
 
 @Component({
@@ -64,14 +64,26 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   onDeleteItem(itemID: number) {
     this.oncostsItems = this.oncostsItems.filter(i => i.itemID !== itemID);
     this.form.removeControl(itemID.toString());
+    if (!this.isUniqueItemType) { return; }
 
-    // TODO: Refresh all existing items for duplicated validation
+    this.subscriptions.push(
+      timer(100).subscribe(() => {
+        Object.keys(this.form.controls).forEach(key => {
+          const itemForm = this.form.get(key);
+          if (itemForm.invalid) {
+            const value = {...itemForm.value};
+            itemForm.setValue(value);
+          }
+        })
+      })
+    )
   }
 
   validate(_: AbstractControl): ValidationErrors | null {
     return this.form.valid
       ? null
-      : { invalidForm: { valid: false, message: 'invalid item' } };  }
+      : { invalidForm: { valid: false, message: 'invalid item' } };
+  }
 
   writeValue(val: any): void {
     if (val) {
