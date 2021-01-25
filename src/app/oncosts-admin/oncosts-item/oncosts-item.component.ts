@@ -37,6 +37,10 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
   form: FormGroup;
   subscriptions: Subscription[] = [];
 
+  get canAddAnotherItem(): boolean {
+    return this.form?.valid && this.canAddAnother;
+  }
+
   get canShowItemTypeError(): boolean | null | undefined {
     return this.itemTypeControl
       && this.itemTypeControl.invalid
@@ -147,7 +151,7 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
   }
 
   onAddAnotherItem() {
-    if (!this.form.valid) {return; }
+    if (!this.canAddAnotherItem) {return; }
 
     this.addAnotherItem.emit();
   }
