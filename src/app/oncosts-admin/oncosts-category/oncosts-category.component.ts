@@ -39,6 +39,10 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
     return this.form.valid;
   }
 
+  get canAddAnotherItem(): boolean {
+    return this.isOncostsCategoryValid;
+  }
+
   get nextItemID(): number {
     if (!this.oncostsItems) { return 1; }
 

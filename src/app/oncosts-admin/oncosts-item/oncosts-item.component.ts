@@ -28,6 +28,7 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
   @Input() placeholderText: string;
   @Input() isUniqueItemType = false;
   @Input() duplicatedErrorText: string = 'Item type already exists. Please rename.';
+  @Input() canAddAnother = false;
   @Output() addAnotherItem = new EventEmitter<null>();
   @Output() deleteItem = new EventEmitter<number>();
 
