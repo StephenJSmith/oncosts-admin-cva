@@ -1,4 +1,4 @@
-import { AfterViewInit, ElementRef, EventEmitter, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, ElementRef, EventEmitter, ViewChild } from '@angular/core';
 import { ChangeDetectionStrategy, Component, forwardRef, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validators, ValidatorFn } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -95,6 +95,7 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
 
   constructor(
     private fb: FormBuilder,
+    private cdRef: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -151,6 +152,7 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
   }
 
   onDelete() {
+    this.cdRef.markForCheck();
     this.deleteItem.emit(this.oncostItem.itemID);
   }
 
@@ -161,7 +163,10 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
     if (value) {
       this.value = value;
     }
+
+    this.cdRef.markForCheck();
   }
+
   registerOnChange(fn: any): void {
     this.onChange = fn;
   }

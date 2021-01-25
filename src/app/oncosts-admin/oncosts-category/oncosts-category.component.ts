@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, forwardRef, Output, OnDestroy, Input, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, forwardRef, Output, OnDestroy, Input, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, NG_VALIDATORS, FormBuilder, FormGroup, ControlValueAccessor, Validator, AbstractControl, ValidationErrors, FormControl } from '@angular/forms';
 import { Subscription, timer } from 'rxjs';
 import { OncostsItem } from '../oncosts-item';
@@ -48,7 +48,8 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   }
 
   constructor(
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private cdRef: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -64,6 +65,7 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   onDeleteItem(itemID: number) {
     this.oncostsItems = this.oncostsItems.filter(i => i.itemID !== itemID);
     this.form.removeControl(itemID.toString());
+    this.cdRef.markForCheck();
     if (!this.isUniqueItemType) { return; }
 
     this.subscriptions.push(
@@ -106,6 +108,7 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
     };
     this.oncostsItems.push(newItem);
     this.addItemAsControl(newItem);
+    this.cdRef.markForCheck();
   }
 
   private addItemAsControl(item: OncostsItem) {
