@@ -4,9 +4,13 @@
       [disabled]="!canPopulate"
       (click)="populateOncostsAdmin()">Populate</button>
     <span class="explanation">
-      (Simulate opening the form with existing data - if form NOT touched)
+      (Simulate opening the form with existing data)
     </span>
   </div>
+
+  <pre>
+    isUniqueItemType: {{isUniqueItemType}}
+  </pre>
 
   <app-oncosts-amount
     formControlName="casualLoading"

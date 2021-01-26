@@ -1,3 +1,7 @@
+.input-line {
+  margin-top: 1em;
+}
+
 input {
   border-radius: 3px;
   padding: 5px;
