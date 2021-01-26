@@ -143,7 +143,7 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
     const otherItems = Object.values(this.oncostItems)
       .filter(i => i.itemID !== id);
     const index = otherItems.findIndex(i =>
-      i.itemType.toLocaleLowerCase() === itemType);
+      i.itemType.toLowerCase() === itemType);
 
     return index < 0
       ? null

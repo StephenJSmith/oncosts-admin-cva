@@ -151,19 +151,6 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
     )
   }
 
-  private initialiseItems(oncostsItems: OncostsItem[]) {
-    oncostsItems.forEach(item => {
-      this.form.addControl(
-        item.itemID.toString(),
-        new FormControl({
-          itemID: item.itemID,
-          itemType: item.itemType,
-          amount: item.amount,
-        })
-      )
-    })
-  }
-
   private loadItems() {
     if (!this.oncostsItems) {
       return;
