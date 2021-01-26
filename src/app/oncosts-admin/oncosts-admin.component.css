@@ -47,6 +47,13 @@ button {
   padding: 5px 10px;
 }
 
+.invalid-feedback {
+  margin-top: 5px;
+  display: block;
+  color: red;
+  font-size: .8em;
+}
+
 pre {
   display: inline-block;
   margin-left: 50px;

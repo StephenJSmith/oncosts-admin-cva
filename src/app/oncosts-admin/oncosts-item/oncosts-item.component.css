@@ -12,10 +12,6 @@ input.amount {
   width: 75px;
 }
 
-.input-line {
-  margin-top: 10px;
-}
-
 .invalid-feedback {
   margin-top: 5px;
   display: block;

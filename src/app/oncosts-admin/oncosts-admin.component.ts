@@ -14,6 +14,12 @@ export class OncostsAdminComponent implements OnInit {
 
   persisted: OncostsAdmin;
 
+  get canPopulate(): boolean {
+    if (!this.adminForm) { return false; }
+
+    return !this.adminForm.touched;
+  }
+
   get isTaxesItemsValid(): boolean {
     if (!this.adminForm) { return false; }
 
@@ -28,22 +34,34 @@ export class OncostsAdminComponent implements OnInit {
     return this.adminForm?.controls?.other?.valid;
   }
 
-  get taxes(): OncostsItem[] {
-    if (!this.persisted?.taxes) { return []; }
-
-    return this.persisted.taxes;
+  get canShowCasualLoadingError(): boolean | null | undefined {
+    return this.adminForm?.controls?.casualLoading.invalid
+      && this.adminForm?.controls?.casualLoading.touched;
   }
 
-  get insurances(): OncostsItem[] {
-    if (!this.persisted?.insurances) { return []; }
-
-    return this.persisted.insurances;
+  get canShowCasualLoadingRequiredError(): boolean | null| undefined {
+    return this.canShowCasualLoadingError
+      && this.adminForm?.controls?.casualLoading?.errors?.required;
   }
 
-  get other(): OncostsItem[] {
-    if (!this.persisted?.other) { return []; }
+  get canShowCasualLoadingMinAmountError(): boolean | null| undefined {
+    return this.canShowCasualLoadingError
+      && this.adminForm?.controls?.casualLoading?.errors?.min;
+  }
 
-    return this.persisted.other;
+  get canShowSuperannuationError(): boolean | null | undefined {
+    return this.adminForm?.controls?.superannuation.invalid
+      && this.adminForm?.controls?.superannuation.touched;
+  }
+
+  get canShowSuperannuationRequiredError(): boolean | null| undefined {
+    return this.canShowSuperannuationError
+      && this.adminForm?.controls?.superannuation?.errors?.required;
+  }
+
+  get canShowSuperannuationMinAmountError(): boolean | null| undefined {
+    return this.canShowSuperannuationError
+      && this.adminForm?.controls?.superannuation?.errors?.min;
   }
 
   constructor(
@@ -57,8 +75,8 @@ export class OncostsAdminComponent implements OnInit {
 
   createAdminForm() {
     this.adminForm = this.fb.group({
-      casualLoading: [0],
-      superannuation: [0],
+      casualLoading: [0, [Validators.required, Validators.min(0)]],
+      superannuation: [0, [Validators.required, Validators.min(0)]],
       taxes: [],
       insurance: [],
       other: [],
@@ -66,19 +84,21 @@ export class OncostsAdminComponent implements OnInit {
   }
 
   populateOncostsAdmin() {
+    if (!this.canPopulate) { return; }
+
     // simulate existing values when form opened
     const taxes: OncostsItem[] = [
-      { itemType: 'PAYG', amount: 13} as OncostsItem,
-      { itemType: 'FBT', amount: 7} as OncostsItem,
+      { itemID: 0, itemType: 'PAYG', amount: 13} as OncostsItem,
+      { itemID: 0, itemType: 'FBT', amount: 7} as OncostsItem,
     ];
 
     const insurances: OncostsItem[] = [
-      { itemType: 'Workers Comp - NSW', amount: 4.5} as OncostsItem,
-      { itemType: 'Workers Comp - VIC', amount: 5} as OncostsItem,
+      { itemID: 0, itemType: 'Workers Comp - NSW', amount: 4.5} as OncostsItem,
+      { itemID: 0, itemType: 'Workers Comp - VIC', amount: 5} as OncostsItem,
     ];
 
     const other: OncostsItem[] = [
-      { itemType: 'Misc', amount: 6} as OncostsItem,
+      { itemID: 0, itemType: 'Misc', amount: 6} as OncostsItem,
     ];
 
     const populated: OncostsAdmin = {
@@ -90,6 +110,12 @@ export class OncostsAdminComponent implements OnInit {
     };
 
     this.persisted = {... populated};
+
+    this.adminForm.controls.casualLoading.setValue(this.persisted.casualLoading);
+    this.adminForm.controls.superannuation.setValue(this.persisted.superannuation);
+    this.loadCategoryItems('taxes', this.persisted.taxes);
+    this.loadCategoryItems('insurance', this.persisted.insurances);
+    this.loadCategoryItems('other', this.persisted.other);
   }
 
   createNewItem(): FormGroup {
@@ -106,7 +132,12 @@ export class OncostsAdminComponent implements OnInit {
 
   onCancel() {}
 
-  private loadTaxesCategoryItems() {
+  private loadCategoryItems(key: string, items: OncostsItem[]) {
+    this.adminForm.patchValue(
+      { [key]: items },
+      { emitEvent: false }
+    );
 
+    this.cdRef.markForCheck();
   }
 }

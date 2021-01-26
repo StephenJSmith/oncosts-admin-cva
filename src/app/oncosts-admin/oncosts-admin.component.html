@@ -1,19 +1,45 @@
 <form [formGroup]="adminForm">
   <div class="populate-button">
-    <button (click)="populateOncostsAdmin()">Populate</button>
+    <button
+      [disabled]="!canPopulate"
+      (click)="populateOncostsAdmin()">Populate</button>
     <span class="explanation">
-      (Simulate opening the form with existing data)
+      (Simulate opening the form with existing data - if form NOT touched)
     </span>
   </div>
 
   <div>
     <div class="label">Casual Loading:</div>
     <input class="amount" formControlName="casualLoading" />%
+    <div class="error-lines">
+      <div *ngIf="canShowCasualLoadingError"
+        class="invalid-feedback">
+        <div *ngIf="canShowCasualLoadingRequiredError">
+          Amount is required
+        </div>
+
+        <div *ngIf="canShowCasualLoadingMinAmountError">
+          The amount must be greater than zero
+        </div>
+      </div>
+    </div>
   </div>
 
   <div>
     <div class="label">Superannuation:</div>
     <input class="amount" formControlName="superannuation" />%
+    <div class="error-lines">
+      <div *ngIf="canShowSuperannuationError"
+        class="invalid-feedback">
+        <div *ngIf="canShowSuperannuationRequiredError">
+          Amount is required
+        </div>
+
+        <div *ngIf="canShowSuperannuationMinAmountError">
+          The amount must be greater than zero
+        </div>
+      </div>
+    </div>
   </div>
 
   <app-oncosts-category

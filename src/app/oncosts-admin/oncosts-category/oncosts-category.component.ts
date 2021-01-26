@@ -89,14 +89,38 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   validate(_: AbstractControl): ValidationErrors | null {
     return this.form.valid
       ? null
-      : { invalidForm: { valid: false, message: 'invalid item' } };
+      : { invalidForm: { invalid: true, message: 'invalid item' } };
   }
 
   writeValue(val: any): void {
     if (val) {
       this.oncostsItems = val;
+      this.setUniqueItemIDs(this.oncostsItems);
       this.loadItems();
     }
+  }
+
+  private setUniqueItemIDs(items: OncostsItem[]) {
+    items.forEach(i => {
+      const itemID = (this.isUniqueItemID(i.itemID, items))
+        ? i.itemID
+        : this.nextItemID;
+      i.itemID = itemID;
+    });
+  }
+
+  private isUniqueItemID(id: number, items: OncostsItem[]): boolean {
+    if (!id) { return false; }
+
+    const countItemIDs = this.getItemIDCount(id, items);
+
+    return countItemIDs === 1;
+  }
+
+  private getItemIDCount(id: number, items: OncostsItem[]): number {
+    const count = items.reduce((acc, curr) => curr.itemID === id ? ++acc : acc, 0);
+
+    return count;
   }
 
   registerOnChange(fn: any): void {
@@ -133,8 +157,8 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
         item.itemID.toString(),
         new FormControl({
           itemID: item.itemID,
-          itemType: '',
-          amount: 0,
+          itemType: item.itemType,
+          amount: item.amount,
         })
       )
     })
@@ -145,6 +169,9 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
       return;
     }
 
-    this.form.setValue(this.oncostsItems, { emitEvent: false });
+    this.oncostsItems.forEach(i => {
+      this.addItemAsControl(i);
+      this.cdRef.markForCheck();
+    });
   }
 }
