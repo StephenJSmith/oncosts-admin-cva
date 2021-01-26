@@ -27,6 +27,11 @@
         {{ duplicatedErrorText }}
       </div>
 
+      <div *ngIf="canShowItemTypeInvalidError"
+        class="invalid-feedback">
+        {{ invalidItemTypeErrorText }}
+      </div>
+
       <div *ngIf="canShowItemTypeError" class="invalid-feedback">
         <div *ngIf="canShowItemTypeRequiredError">
           Required - {{ this.placeholderText }}

@@ -2,7 +2,7 @@
   <div class="category label">
     {{categoryName}}
   </div>
-  <button [disabled]="!isOncostsCategoryValid" (click)="addOncostsItem()">
+  <button [disabled]="!isOncostsCategoryValid" (click)="onAddOncostsItem()">
     + Add Item
   </button>
 
@@ -13,12 +13,14 @@
   <app-oncosts-item
     [formControlName]="oncostItem.itemID"
     [oncostItem]="oncostItem"
-    [oncostItems]="form.value"
     [placeholderText]="placeholderText"
+    [oncostItems]="form.value"
     [isUniqueItemType]="isUniqueItemType"
     [duplicatedErrorText]="duplicatedErrorText"
     [canAddAnother]="canAddAnotherItem"
-    (addAnotherItem)="addOncostsItem()"
+    [invalidItemTypes]="getInvalidItemTypes(oncostItem.itemID)"
+    [invalidItemTypeErrorText]="duplicatedErrorText"
+    (addAnotherItem)="onAddOncostsItem()"
     (deleteItem)="onDeleteItem($event)"
   ></app-oncosts-item>
 </ng-container>

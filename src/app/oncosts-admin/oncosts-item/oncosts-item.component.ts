@@ -24,11 +24,15 @@ import { OncostsItem } from '../oncosts-item';
 })
 export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, ControlValueAccessor {
   @Input() oncostItem: OncostsItem;
-  @Input() oncostItems: OncostsItem[] = [];
   @Input() placeholderText: string;
+
+  @Input() oncostItems: OncostsItem[] = [];
   @Input() isUniqueItemType = false;
   @Input() duplicatedErrorText: string = 'Item type already exists. Please rename.';
+
   @Input() canAddAnother = false;
+  @Input() invalidItemTypes: string[];
+  @Input() invalidItemTypeErrorText: string;
   @Output() addAnotherItem = new EventEmitter<null>();
   @Output() deleteItem = new EventEmitter<number>();
 
@@ -55,6 +59,10 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
   get canShowItemTypeDuplicatedError(): boolean | null | undefined {
     return this.isUniqueItemType
       && this.form?.errors?.duplicated;
+  }
+
+  get canShowItemTypeInvalidError(): boolean | null | undefined {
+    return this.form?.controls?.itemType.errors?.invalidItemType;
   }
 
   get canShowAmountError(): boolean | null | undefined {
@@ -109,10 +117,12 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
       itemType: [this.oncostItem.itemType,
         [
           Validators.required,
+          this.validateItemType.bind(this),   // Simpler  unique itemType control validation
         ]],
       amount: [this.oncostItem.amount, [Validators.required, Validators.min(0.01)]],
     }, {
-      validators: [this.validateItemTypeNotDuplicated.bind(this)],
+      // NB: Form level validation for unique itemType
+      // validators: [this.validateItemTypeNotDuplicated.bind(this)],
     });
 
     this.subscriptions.push(
@@ -148,6 +158,19 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
     return index < 0
       ? null
       : { 'duplicated': true };
+  }
+
+  validateItemType(control: AbstractControl) {
+    let itemType = control.value as string | null;
+    if (!itemType || !this.invalidItemTypes.length)
+    { return null; }
+
+    itemType = itemType.toLowerCase();
+    const index = this.invalidItemTypes.findIndex(it => it === itemType);
+
+    return index < 0
+      ? null
+      : { 'invalidItemType': true };
   }
 
   onAddAnotherItem() {

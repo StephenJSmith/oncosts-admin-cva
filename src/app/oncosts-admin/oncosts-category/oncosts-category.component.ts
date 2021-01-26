@@ -25,13 +25,18 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   @Input() categoryName: string;
   @Input() placeholderText: string;
   @Input() duplicatedErrorText = 'Item type already exists. Please rename.';
-
-  isUniqueItemType = true;
+  @Input() isUniqueItemType = false;
 
   oncostsItems: OncostsItem[] = [];
 
   form: FormGroup;
   subscriptions: Subscription[] = [];
+
+  get formOncostItems(): OncostsItem[] {
+    if (!this.form) { return []; }
+
+    return Object.values(this.form.value);
+  }
 
   get isOncostsCategoryValid(): boolean {
     if (!this.form) { return false; }
@@ -129,7 +134,7 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
 
   registerOnTouched(fn: any): void { }
 
-  addOncostsItem() {
+  onAddOncostsItem() {
     const newItem: OncostsItem = {
       itemID: this.nextItemID,
       itemType: '',
@@ -138,6 +143,23 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
     this.oncostsItems.push(newItem);
     this.addItemAsControl(newItem);
     this.cdRef.markForCheck();
+  }
+
+  getInvalidItemTypes(itemID: number): string[] {
+    if (!this.isUniqueItemType) { return []; }
+
+    const invalidItemTypes = this.getOtherItemTypes(itemID)
+      .map(itemType => itemType.toLowerCase())
+
+    return invalidItemTypes
+  }
+
+  private getOtherItemTypes(itemID: number): string[] {
+    const itemTypes =  this.formOncostItems
+      .filter(i => i.itemID !== itemID)
+      .map(i => i.itemType);
+
+    return itemTypes;
   }
 
   private addItemAsControl(item: OncostsItem) {

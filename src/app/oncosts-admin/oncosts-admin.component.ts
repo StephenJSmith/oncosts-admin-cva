@@ -11,6 +11,7 @@ import { OncostsItem } from './oncosts-item';
 export class OncostsAdminComponent implements OnInit {
   adminForm: FormGroup;
   duplicatedErrorText = "Oncost item already added. Please remove.";
+  isUniqueItemType = true;
 
   persisted: OncostsAdmin;
 
