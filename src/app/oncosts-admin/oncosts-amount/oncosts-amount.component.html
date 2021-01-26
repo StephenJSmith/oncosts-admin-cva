@@ -1,0 +1,28 @@
+<div>
+  <div class="label">
+    {{label}}
+  </div>
+
+  <input
+    #input
+    [ngClass]="controlClass"
+    type="text"
+    (input)="onChange($event.target.value)"
+    (blur)="onTouched()"
+    class="amount"
+  />%
+
+    <div class="error-lines">
+      <div *ngIf="canShowError"
+        class="invalid-feedback">
+        <div *ngIf="canShowRequiredError">
+          Amount is required
+        </div>
+
+        <div *ngIf="canShowMinAmountError">
+          The amount must be greater than zero
+        </div>
+      </div>
+    </div>
+</div>
+
