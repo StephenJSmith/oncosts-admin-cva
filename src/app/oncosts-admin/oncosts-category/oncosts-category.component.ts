@@ -56,6 +56,12 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
       : Math.max.apply(Math, this.oncostsItems.map(i => i.itemID)) + 1;
   }
 
+  get formKeys(): string[] {
+    if (!this.form) { return []; }
+
+    return Object.keys(this.form.controls);
+  }
+
   constructor(
     private fb: FormBuilder,
     private cdRef: ChangeDetectorRef,
@@ -64,12 +70,18 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   ngOnInit(): void {
     this.form = this.fb.group({});
 
-    this.subscriptions.push()
+    this.subscriptions.push(
+      this.form.valueChanges.subscribe(value => {
+        this.onChange(value);
+        this.onTouched();
+      })
+    )
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
+
 
   onDeleteItem(itemID: number) {
     this.oncostsItems = this.oncostsItems.filter(i => i.itemID !== itemID);
@@ -91,6 +103,9 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
     )
   }
 
+  onChange: any = () => {};
+  onTouched: any =() => {};
+
   validate(_: AbstractControl): ValidationErrors | null {
     return this.form.valid
       ? null
@@ -98,11 +113,54 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   }
 
   writeValue(val: any): void {
-    if (val) {
+    if (val && val.length) {
       this.oncostsItems = val;
       this.setUniqueItemIDs(this.oncostsItems);
       this.loadItems();
+    } else {
+      this.oncostsItems = [];
+      this.removeAllFormGroupControls();
     }
+  }
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+   }
+
+  onAddOncostsItem() {
+    const newItem: OncostsItem = {
+      itemID: this.nextItemID,
+      itemType: '',
+      amount: 0
+    };
+    this.oncostsItems.push(newItem);
+    this.addItemAsControl(newItem);
+    this.cdRef.markForCheck();
+  }
+
+  getInvalidItemTypes(itemID: number): string[] {
+    if (!this.isUniqueItemType) { return []; }
+
+    const invalidItemTypes = this.getOtherItemTypes(itemID)
+      .map(itemType => itemType.toLowerCase())
+
+    return invalidItemTypes
+  }
+
+  private removeAllFormGroupControls() {
+    const keys = Object.keys(this.form.controls);
+    keys.forEach(key => {
+      this.subscriptions.push(
+        timer(0).subscribe(() => {
+          this.form.removeControl(key);
+          this.cdRef.markForCheck();
+        })
+      );
+    })
   }
 
   private setUniqueItemIDs(items: OncostsItem[]) {
@@ -126,32 +184,6 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
     const count = items.reduce((acc, curr) => curr.itemID === id ? ++acc : acc, 0);
 
     return count;
-  }
-
-  registerOnChange(fn: any): void {
-    this.subscriptions.push(this.form.valueChanges.subscribe(fn));
-  }
-
-  registerOnTouched(fn: any): void { }
-
-  onAddOncostsItem() {
-    const newItem: OncostsItem = {
-      itemID: this.nextItemID,
-      itemType: '',
-      amount: 0
-    };
-    this.oncostsItems.push(newItem);
-    this.addItemAsControl(newItem);
-    this.cdRef.markForCheck();
-  }
-
-  getInvalidItemTypes(itemID: number): string[] {
-    if (!this.isUniqueItemType) { return []; }
-
-    const invalidItemTypes = this.getOtherItemTypes(itemID)
-      .map(itemType => itemType.toLowerCase())
-
-    return invalidItemTypes
   }
 
   private getOtherItemTypes(itemID: number): string[] {

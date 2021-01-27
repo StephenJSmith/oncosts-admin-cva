@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Subscription, timer } from 'rxjs';
 import { OncostsAdmin } from './oncosts-admin';
 import { OncostsItem } from './oncosts-item';
 
@@ -9,60 +10,69 @@ import { OncostsItem } from './oncosts-item';
   styleUrls: ['./oncosts-admin.component.css']
 })
 export class OncostsAdminComponent implements OnInit {
-  adminForm: FormGroup;
+  form: FormGroup;
   duplicatedErrorText = "Oncost item already added. Please remove.";
   isUniqueItemType = true;
 
-  persisted: OncostsAdmin;
+  subscriptions: Subscription[] = [];
+  lastPersisted: OncostsAdmin;
+  persistedDeepCopy: OncostsAdmin;
+  emptyOncostsAdmin = {
+    casualLoading: 0,
+    superannuation: 0,
+    taxes: [],
+    insurances: [],
+    other: [],
+  } as OncostsAdmin;
 
   get canPopulate(): boolean {
-    if (!this.adminForm) { return false; }
+    if (!this.form) { return false; }
 
-    return !this.adminForm.touched;
+    return !this.form.touched;
   }
 
   get isTaxesItemsValid(): boolean {
-    if (!this.adminForm) { return false; }
+    if (!this.form) { return false; }
 
-    return this.adminForm.controls.taxes.valid;
+    return this.form.controls.taxes.valid;
   }
 
   get isInsuranceItemsValid(): boolean {
-    return this.adminForm?.controls?.insurance?.valid;
+    return this.form?.controls?.insurance?.valid;
   }
 
   get isOtherItemsValid(): boolean {
-    return this.adminForm?.controls?.other?.valid;
+    return this.form?.controls?.other?.valid;
   }
 
   get canShowCasualLoadingError(): boolean | null | undefined {
-    return this.adminForm?.controls?.casualLoading.invalid
-      && this.adminForm?.controls?.casualLoading.touched;
+    return this.form?.controls?.casualLoading.invalid
+      && this.form?.controls?.casualLoading.touched;
   }
 
   get canShowCasualLoadingRequiredError(): boolean | null| undefined {
     return this.canShowCasualLoadingError
-      && this.adminForm?.controls?.casualLoading?.errors?.required;
+      && this.form?.controls?.casualLoading?.errors?.required;
   }
 
   get canShowCasualLoadingMinAmountError(): boolean | null| undefined {
     return this.canShowCasualLoadingError
-      && this.adminForm?.controls?.casualLoading?.errors?.min;
+      && this.form?.controls?.casualLoading?.errors?.min;
   }
 
   get canShowSuperannuationError(): boolean | null | undefined {
-    return this.adminForm?.controls?.superannuation.invalid
-      && this.adminForm?.controls?.superannuation.touched;
+    return this.form?.controls?.superannuation.invalid
+      && this.form?.controls?.superannuation.touched;
   }
 
   get canShowSuperannuationRequiredError(): boolean | null| undefined {
     return this.canShowSuperannuationError
-      && this.adminForm?.controls?.superannuation?.errors?.required;
+      && this.form?.controls?.superannuation?.errors?.required;
   }
 
   get canShowSuperannuationMinAmountError(): boolean | null| undefined {
     return this.canShowSuperannuationError
-      && this.adminForm?.controls?.superannuation?.errors?.min;
+      && this.form?.controls?.superannuation?.errors?.min;
   }
 
   constructor(
@@ -71,11 +81,12 @@ export class OncostsAdminComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.lastPersisted = { ...this.emptyOncostsAdmin };
     this.createAdminForm();
   }
 
   createAdminForm() {
-    this.adminForm = this.fb.group({
+    this.form = this.fb.group({
       casualLoading: [0, [Validators.required, Validators.min(0)]],
       superannuation: [0, [Validators.required, Validators.min(0)]],
       taxes: [],
@@ -110,13 +121,10 @@ export class OncostsAdminComponent implements OnInit {
       other,
     };
 
-    this.persisted = {... populated};
+    this.lastPersisted = {... populated};
+    this.persistedDeepCopy = JSON.parse(JSON.stringify(this.lastPersisted));
 
-    this.adminForm.controls.casualLoading.setValue(this.persisted.casualLoading);
-    this.adminForm.controls.superannuation.setValue(this.persisted.superannuation);
-    this.loadCategoryItems('taxes', this.persisted.taxes);
-    this.loadCategoryItems('insurance', this.persisted.insurances);
-    this.loadCategoryItems('other', this.persisted.other);
+    this.setFormControlsToLastPersistedValues();
   }
 
   createNewItem(): FormGroup {
@@ -127,14 +135,39 @@ export class OncostsAdminComponent implements OnInit {
   }
 
   onSaveChanges() {
-    this.adminForm.markAsPristine();
-    console.log(this.adminForm.value);
+    if (!this.form.valid) { return; }
+
+    this.lastPersisted = {...this.form.value};
+    this.form.markAsPristine();
   }
 
-  onCancel() {}
+  onCancel() {
+    this.setFormControlsToLastPersistedValues();
+  }
+
+  private setFormControlsToLastPersistedValues() {
+    this.form.reset(this.emptyOncostsAdmin);
+
+    this.lastPersisted = JSON.parse(JSON.stringify(this.persistedDeepCopy));
+
+    this.form.controls.casualLoading.setValue(this.lastPersisted.casualLoading);
+    this.form.controls.superannuation.setValue(this.lastPersisted.superannuation);
+    this.cdRef.markForCheck();
+
+    this.subscriptions.push(
+      timer(0).subscribe(() => {
+        this.loadCategoryItems('taxes', (this.lastPersisted.taxes));
+        this.loadCategoryItems('insurance', (this.lastPersisted.insurances));
+        this.loadCategoryItems('other', (this.lastPersisted.other));
+
+        this.cdRef.markForCheck();
+        this.form.markAsPristine();
+      })
+    )
+  }
 
   private loadCategoryItems(key: string, items: OncostsItem[]) {
-    this.adminForm.patchValue(
+    this.form.patchValue(
       { [key]: items },
       { emitEvent: false }
     );

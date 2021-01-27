@@ -6,7 +6,11 @@
     + Add Item
   </button>
 
-  <pre style="margin-top: 0;">isOncostsCategoryValid: {{ isOncostsCategoryValid }}</pre>
+  <pre>isOncostsCategoryValid: {{ isOncostsCategoryValid }}</pre>
+
+  <pre>
+    formKeys: {{ formKeys }}
+  </pre>
 
   <ng-container *ngFor="let oncostItem of oncostsItems"
   [formGroup]="form">
