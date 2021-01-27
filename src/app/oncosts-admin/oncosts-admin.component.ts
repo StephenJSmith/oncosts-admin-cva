@@ -38,7 +38,7 @@ export class OncostsAdminComponent implements OnInit {
   }
 
   get isInsuranceItemsValid(): boolean {
-    return this.form?.controls?.insurance?.valid;
+    return this.form?.controls?.insurances?.valid;
   }
 
   get isOtherItemsValid(): boolean {
@@ -90,7 +90,7 @@ export class OncostsAdminComponent implements OnInit {
       casualLoading: [0, [Validators.required, Validators.min(0)]],
       superannuation: [0, [Validators.required, Validators.min(0)]],
       taxes: [],
-      insurance: [],
+      insurances: [],
       other: [],
     });
   }
@@ -147,7 +147,7 @@ export class OncostsAdminComponent implements OnInit {
   }
 
   private setFormControlsToLastPersistedValues() {
-    this.form.reset(this.emptyOncostsAdmin);
+    this.form.setValue(this.emptyOncostsAdmin);
 
     this.lastPersisted = JSON.parse(JSON.stringify(this.persistedDeepCopy));
 
@@ -158,7 +158,7 @@ export class OncostsAdminComponent implements OnInit {
     this.subscriptions.push(
       timer(0).subscribe(() => {
         this.loadCategoryItems('taxes', (this.lastPersisted.taxes));
-        this.loadCategoryItems('insurance', (this.lastPersisted.insurances));
+        this.loadCategoryItems('insurances', (this.lastPersisted.insurances));
         this.loadCategoryItems('other', (this.lastPersisted.other));
 
         this.cdRef.markForCheck();

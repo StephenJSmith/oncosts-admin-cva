@@ -122,13 +122,17 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   }
 
   writeValue(val: any): void {
-    if (val && val.length) {
-      this.oncostsItems = val;
-      this.setUniqueItemIDs(this.oncostsItems);
-      this.loadItems();
-    } else {
+    const isEmpty = !val || Array.isArray(val) && val.length === 0;
+
+    if (isEmpty) {
       this.oncostsItems = [];
       this.removeAllFormGroupControls();
+    } else {
+      this.oncostsItems = Array.isArray(val)
+        ? val
+        : Object.values(val);
+      this.setUniqueItemIDs(this.oncostsItems);
+      this.loadItems();
     }
   }
 
