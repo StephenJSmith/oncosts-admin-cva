@@ -138,6 +138,7 @@ export class OncostsAdminComponent implements OnInit {
     if (!this.form.valid) { return; }
 
     this.lastPersisted = {...this.form.value};
+    this.persistedDeepCopy = JSON.parse(JSON.stringify(this.lastPersisted));
     this.form.markAsPristine();
   }
 

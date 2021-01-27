@@ -18,7 +18,7 @@
     [formControlName]="oncostItem.itemID"
     [oncostItem]="oncostItem"
     [placeholderText]="placeholderText"
-    [canAddAnother]="canAddAnotherItem"
+    [canAddAnother]="canAddAnotherItem(oncostItem.itemID)"
     [invalidItemTypes]="getInvalidItemTypes(oncostItem.itemID)"
     [invalidItemTypeErrorText]="duplicatedErrorText"
     (addAnotherItem)="onAddOncostsItem()"

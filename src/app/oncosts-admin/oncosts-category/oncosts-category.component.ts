@@ -44,16 +44,19 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
     return this.form.valid;
   }
 
-  get canAddAnotherItem(): boolean {
-    return this.isOncostsCategoryValid;
-  }
-
   get nextItemID(): number {
     if (!this.oncostsItems) { return 1; }
 
     return this.oncostsItems.length == 0
       ? 1
       : Math.max.apply(Math, this.oncostsItems.map(i => i.itemID)) + 1;
+  }
+
+  get lastOncostItem(): OncostsItem {
+    if (!this.oncostsItems || !this.oncostsItems.length)
+    { return null; }
+
+    return [...this.oncostsItems].pop();
   }
 
   get formKeys(): string[] {
@@ -82,6 +85,12 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
+  canAddAnotherItem(itemID: number): boolean {
+    if (itemID !== this.lastOncostItem.itemID)
+    { return false; }
+
+    return this.isOncostsCategoryValid;
+  }
 
   onDeleteItem(itemID: number) {
     this.oncostsItems = this.oncostsItems.filter(i => i.itemID !== itemID);
