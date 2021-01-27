@@ -25,11 +25,6 @@ import { OncostsItem } from '../oncosts-item';
 export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, ControlValueAccessor {
   @Input() oncostItem: OncostsItem;
   @Input() placeholderText: string;
-
-  @Input() oncostItems: OncostsItem[] = [];
-  @Input() isUniqueItemType = false;
-  @Input() duplicatedErrorText: string = 'Item type already exists. Please rename.';
-
   @Input() canAddAnother = false;
   @Input() invalidItemTypes: string[];
   @Input() invalidItemTypeErrorText: string;
@@ -54,11 +49,6 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
   get canShowItemTypeRequiredError(): boolean | null | undefined {
     return this.canShowItemTypeError
       && this.itemTypeControl?.errors?.required;
-  }
-
-  get canShowItemTypeDuplicatedError(): boolean | null | undefined {
-    return this.isUniqueItemType
-      && this.form?.errors?.duplicated;
   }
 
   get canShowItemTypeInvalidError(): boolean | null | undefined {
@@ -117,12 +107,9 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
       itemType: [this.oncostItem.itemType,
         [
           Validators.required,
-          this.validateItemType.bind(this),   // Simpler  unique itemType control validation
+          this.validateItemType.bind(this),
         ]],
       amount: [this.oncostItem.amount, [Validators.required, Validators.min(0.01)]],
-    }, {
-      // NB: Form level validation for unique itemType
-      // validators: [this.validateItemTypeNotDuplicated.bind(this)],
     });
 
     this.subscriptions.push(
@@ -141,23 +128,6 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
-  }
-
-  validateItemTypeNotDuplicated (control: AbstractControl) {
-    if (!this.isUniqueItemType) { return null; }
-
-    const id = control.get('itemID').value;
-    const itemType = control.get('itemType').value?.toLowerCase();
-    if (!itemType || !itemType.trim()) { return null; }
-
-    const otherItems = Object.values(this.oncostItems)
-      .filter(i => i.itemID !== id);
-    const index = otherItems.findIndex(i =>
-      i.itemType.toLowerCase() === itemType);
-
-    return index < 0
-      ? null
-      : { 'duplicated': true };
   }
 
   validateItemType(control: AbstractControl) {

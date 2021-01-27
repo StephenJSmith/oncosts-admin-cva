@@ -78,7 +78,6 @@ export class OncostsAdminComponent implements OnInit {
     this.adminForm = this.fb.group({
       casualLoading: [0, [Validators.required, Validators.min(0)]],
       superannuation: [0, [Validators.required, Validators.min(0)]],
-      miscAmount: [0, [Validators.required, Validators.min(0)]],
       taxes: [],
       insurance: [],
       other: [],

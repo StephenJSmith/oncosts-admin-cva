@@ -15,19 +15,9 @@
         (click)="onAddAnotherItem()">+1</button>
 
       <button (click)="onDelete()">Del</button>
-
-      <!-- Only useful if the use of the form level unique itemType validation -->
-      <!-- <pre>
-        {{form.errors | json }}
-      </pre> -->
     </div>
 
     <div class="error-lines">
-      <div *ngIf="canShowItemTypeDuplicatedError"
-        class="invalid-feedback">
-        {{ duplicatedErrorText }}
-      </div>
-
       <div *ngIf="canShowItemTypeInvalidError"
         class="invalid-feedback">
         {{ invalidItemTypeErrorText }}
