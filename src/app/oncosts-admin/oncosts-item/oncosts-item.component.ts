@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, ElementRef, EventEmitter, ViewChild } from '@angular/core';
 import { ChangeDetectionStrategy, Component, forwardRef, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { AbstractControl, ControlValueAccessor, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validators, ValidatorFn } from '@angular/forms';
+import { AbstractControl, ControlValueAccessor, FormBuilder, FormGroup, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validators, ValidatorFn, Validator } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { OncostsItem } from '../oncosts-item';
 
@@ -22,7 +22,7 @@ import { OncostsItem } from '../oncosts-item';
     },
   ]
 })
-export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, ControlValueAccessor {
+export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, ControlValueAccessor, Validator {
   @Input() oncostItem: OncostsItem;
   @Input() placeholderText: string;
   @Input() canAddAnother = false;

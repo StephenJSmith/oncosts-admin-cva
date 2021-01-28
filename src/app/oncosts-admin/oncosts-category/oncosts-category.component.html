@@ -1,6 +1,6 @@
 <div class="category">
   <div class="category label">
-    {{categoryName}}
+    {{ categoryName }}
   </div>
   <button [disabled]="!isOncostsCategoryValid" (click)="onAddOncostsItem()">
     + Add Item
@@ -12,23 +12,24 @@
     formKeys: {{ formKeys }}
   </pre>
 
-  <ng-container *ngFor="let oncostItem of oncostsItems"
-  [formGroup]="form">
-  <app-oncosts-item
-    [formControlName]="oncostItem.itemID"
-    [oncostItem]="oncostItem"
-    [placeholderText]="placeholderText"
-    [canAddAnother]="canAddAnotherItem(oncostItem.itemID)"
-    [invalidItemTypes]="getInvalidItemTypes(oncostItem.itemID)"
-    [invalidItemTypeErrorText]="duplicatedErrorText"
-    (addAnotherItem)="onAddOncostsItem()"
-    (deleteItem)="onDeleteItem($event)"
-  ></app-oncosts-item>
-</ng-container>
+  <div [formGroup]="form">
+    <app-oncosts-item
+      *ngFor="let item of oncostsItems"
+      [formControlName]="item.itemID"
+      [oncostItem]="item"
+      [placeholderText]="placeholderText"
+      [canAddAnother]="canAddAnotherItem(item.itemID)"
+      [invalidItemTypes]="getInvalidItemTypes(item.itemID)"
+      [invalidItemTypeErrorText]="duplicatedErrorText"
+      (addAnotherItem)="onAddOncostsItem()"
+      (deleteItem)="onDeleteItem($event)"
+    ></app-oncosts-item>
+  </div>
 
-<div *ngIf="form">
-  <pre>
-    {{form.value | json}}
-  </pre>
-</div>
+  <div *ngIf="form">
+    <pre>
+    {{ form.value | json }}
+  </pre
+    >
+  </div>
 </div>
