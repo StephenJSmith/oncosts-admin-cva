@@ -81,7 +81,7 @@ export class OncostsAdminComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.lastPersisted = { ...this.emptyOncostsAdmin };
+    this.setLastPersisted(this.emptyOncostsAdmin);
     this.createAdminForm();
   }
 
@@ -125,8 +125,7 @@ export class OncostsAdminComponent implements OnInit, OnDestroy {
       other,
     };
 
-    this.lastPersisted = {... populated};
-    this.persistedDeepCopy = JSON.parse(JSON.stringify(this.lastPersisted));
+    this.setLastPersisted(populated);
 
     this.setFormControlsToLastPersistedValues();
   }
@@ -134,8 +133,7 @@ export class OncostsAdminComponent implements OnInit, OnDestroy {
   onSaveChanges() {
     if (!this.form.valid) { return; }
 
-    this.lastPersisted = {...this.form.value};
-    this.persistedDeepCopy = JSON.parse(JSON.stringify(this.lastPersisted));
+    this.setLastPersisted(this.form.value);
     this.form.markAsPristine();
   }
 
@@ -146,7 +144,7 @@ export class OncostsAdminComponent implements OnInit, OnDestroy {
   private setFormControlsToLastPersistedValues() {
     this.form.setValue(this.emptyOncostsAdmin);
 
-    this.lastPersisted = JSON.parse(JSON.stringify(this.persistedDeepCopy));
+    this.lastPersisted = this.getLastPersisted();
 
     this.form.controls.casualLoading.setValue(this.lastPersisted.casualLoading);
     this.form.controls.superannuation.setValue(this.lastPersisted.superannuation);
@@ -171,5 +169,14 @@ export class OncostsAdminComponent implements OnInit, OnDestroy {
     );
 
     this.cdRef.markForCheck();
+  }
+
+  private setLastPersisted(value: OncostsAdmin) {
+    this.lastPersisted = {...value};
+    this.persistedDeepCopy = JSON.parse(JSON.stringify(this.lastPersisted));
+  }
+
+  private getLastPersisted(): OncostsAdmin{
+    return JSON.parse(JSON.stringify(this.persistedDeepCopy));;
   }
 }
