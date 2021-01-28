@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription, timer } from 'rxjs';
 import { OncostsAdmin } from './oncosts-admin';
 import { OncostsItem } from './oncosts-item';
@@ -9,7 +9,7 @@ import { OncostsItem } from './oncosts-item';
   templateUrl: './oncosts-admin.component.html',
   styleUrls: ['./oncosts-admin.component.css']
 })
-export class OncostsAdminComponent implements OnInit {
+export class OncostsAdminComponent implements OnInit, OnDestroy {
   form: FormGroup;
   duplicatedErrorText = "Oncost item already added. Please remove.";
   isUniqueItemType = true;
@@ -85,6 +85,10 @@ export class OncostsAdminComponent implements OnInit {
     this.createAdminForm();
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
+  }
+
   createAdminForm() {
     this.form = this.fb.group({
       casualLoading: [0, [Validators.required, Validators.min(0)]],
@@ -125,13 +129,6 @@ export class OncostsAdminComponent implements OnInit {
     this.persistedDeepCopy = JSON.parse(JSON.stringify(this.lastPersisted));
 
     this.setFormControlsToLastPersistedValues();
-  }
-
-  createNewItem(): FormGroup {
-    return new FormGroup({
-      'itemType': new FormControl('', [Validators.required]),
-      'amount': new FormControl(0, [Validators.required, Validators.min(0.01)]),
-    });
   }
 
   onSaveChanges() {
