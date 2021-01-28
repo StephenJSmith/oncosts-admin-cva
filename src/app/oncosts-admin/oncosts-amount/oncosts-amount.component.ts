@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, forwardRef, Optional, Self, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, NG_VALIDATORS, Validator, AbstractControl, ValidationErrors, FormControl, Validators, NgControl } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, Input, OnInit, Optional, Self, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
+import { ControlValueAccessor, FormControl, Validators, NgControl } from '@angular/forms';
 
 @Component({
   selector: 'app-oncosts-amount',
@@ -66,7 +66,6 @@ export class OncostsAmountComponent implements OnInit, ControlValueAccessor {
 
   constructor(
     @Optional() @Self() private controlDir: NgControl,
-    private cdRef: ChangeDetectorRef,
     ) {
       if (this.controlDir) {
         this.controlDir.valueAccessor = this;
@@ -84,7 +83,7 @@ export class OncostsAmountComponent implements OnInit, ControlValueAccessor {
     }
    }
 
-  onChange: any = (event) => {};
+  onChange: any = () => {};
   onTouched: any = () => {};
 
   writeValue(value: any): void {
