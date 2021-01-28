@@ -75,13 +75,22 @@ export class OncostsAdminComponent implements OnInit, OnDestroy {
       && this.form?.controls?.superannuation?.errors?.min;
   }
 
+  set lastPersistedSettings(value: OncostsAdmin) {
+    this.lastPersisted = {...value};
+    this.persistedDeepCopy = JSON.parse(JSON.stringify(this.lastPersisted));
+  }
+
+  get lastPersistedSettings(): OncostsAdmin {
+    return JSON.parse(JSON.stringify(this.persistedDeepCopy));
+  }
+
   constructor(
     private fb: FormBuilder,
     private cdRef: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
-    this.setLastPersisted(this.emptyOncostsAdmin);
+    this.lastPersistedSettings = this.emptyOncostsAdmin;
     this.createAdminForm();
   }
 
@@ -125,7 +134,7 @@ export class OncostsAdminComponent implements OnInit, OnDestroy {
       other,
     };
 
-    this.setLastPersisted(populated);
+    this.lastPersistedSettings = populated;
 
     this.setFormControlsToLastPersistedValues();
   }
@@ -133,7 +142,7 @@ export class OncostsAdminComponent implements OnInit, OnDestroy {
   onSaveChanges() {
     if (!this.form.valid) { return; }
 
-    this.setLastPersisted(this.form.value);
+    this.lastPersistedSettings = this.form.value;
     this.form.markAsPristine();
   }
 
@@ -144,8 +153,7 @@ export class OncostsAdminComponent implements OnInit, OnDestroy {
   private setFormControlsToLastPersistedValues() {
     this.form.setValue(this.emptyOncostsAdmin);
 
-    this.lastPersisted = this.getLastPersisted();
-
+    this.lastPersisted = this.lastPersistedSettings;
     this.form.controls.casualLoading.setValue(this.lastPersisted.casualLoading);
     this.form.controls.superannuation.setValue(this.lastPersisted.superannuation);
     this.cdRef.markForCheck();
@@ -169,14 +177,5 @@ export class OncostsAdminComponent implements OnInit, OnDestroy {
     );
 
     this.cdRef.markForCheck();
-  }
-
-  private setLastPersisted(value: OncostsAdmin) {
-    this.lastPersisted = {...value};
-    this.persistedDeepCopy = JSON.parse(JSON.stringify(this.lastPersisted));
-  }
-
-  private getLastPersisted(): OncostsAdmin{
-    return JSON.parse(JSON.stringify(this.persistedDeepCopy));;
   }
 }
