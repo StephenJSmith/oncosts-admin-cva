@@ -77,6 +77,10 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
       this.form.valueChanges.subscribe(value => {
         this.onChange(value);
         this.onTouched();
+
+        if (this.isUniqueItemType) {
+          this.verifyUniqueItemTypes();
+        }
       })
     )
   }
@@ -98,18 +102,7 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
     this.cdRef.markForCheck();
     if (!this.isUniqueItemType) { return; }
 
-    this.subscriptions.push(
-      timer(0).subscribe(() => {
-        Object.keys(this.form.controls).forEach(key => {
-          const itemForm = this.form.get(key);
-          if (itemForm.invalid) {
-            const value = {...itemForm.value};
-            itemForm.setValue(value);
-            this.cdRef.markForCheck();
-          }
-        })
-      })
-    )
+    this.updateValidityAllInvalidControls();
   }
 
   onChange: any = () => {};
@@ -227,5 +220,27 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
       this.addItemAsControl(i);
       this.cdRef.markForCheck();
     });
+  }
+
+  private verifyUniqueItemTypes() {
+    if (!this.isUniqueItemType) {return; }
+    if (this.isOncostsCategoryValid) { return; }
+
+    this.updateValidityAllInvalidControls();
+  }
+
+  private updateValidityAllInvalidControls() {
+    this.subscriptions.push(
+      timer(0).subscribe(() => {
+        Object.keys(this.form.controls).forEach(key => {
+          const itemForm = this.form.get(key);
+          if (itemForm.invalid) {
+            const value = {...itemForm.value};
+            itemForm.setValue(value, { emitEvent: false });
+            this.cdRef.markForCheck();
+          }
+        })
+      })
+    )
   }
 }
