@@ -4,36 +4,36 @@
       <input
         #itemTypeInput
         formControlName="itemType"
-        class="item-type"
+        class="item-type r-item-type-input"
         [placeholder]="placeholderText"
       />
 
       <input
-        class="amount"
+        class="amount r-amount-input"
         formControlName="amount" /> %
 
       <button
         [disabled]="!canAddAnotherItem"
         (click)="onAddAnotherItem()">+1</button>
 
-      <button (click)="onDelete()">Del</button>
+      <button (click)="onDelete()" class="r-delete-item">Del</button>
     </div>
 
     <div class="error-lines">
       <div *ngIf="canShowItemTypeInvalidError"
-        class="invalid-feedback">
+        class="invalid-feedback r-item-type-invalid-error">
         {{ invalidItemTypeErrorText }}
       </div>
 
       <div *ngIf="canShowItemTypeError" class="invalid-feedback">
-        <div *ngIf="canShowItemTypeRequiredError">
+        <div *ngIf="canShowItemTypeRequiredError" class="r-item-type-required-error">
           Required - {{ this.placeholderText }}
         </div>
       </div>
 
       <div *ngIf="canShowAmountError" class="invalid-feedback">
-        <div *ngIf="canShowAmountRequiredError">Amount requred</div>
-        <div *ngIf="canShowMinAmountError">
+        <div *ngIf="canShowAmountRequiredError" class="r-amount-required-error">Amount requred</div>
+        <div *ngIf="canShowMinAmountError" class="r-amount-min-error">
           The amount must be greater than zero
         </div>
       </div>
