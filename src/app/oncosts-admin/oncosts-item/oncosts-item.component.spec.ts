@@ -75,12 +75,13 @@ fdescribe('OncostsItemComponent', () => {
       expect(focusElement.nativeElement).toBe(itemTypeInput);
     }));
 
-    it('should NOT show any errors', () => {
+    it('should NOT show any errors even though initially invalid', () => {
       component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
 
       expect(component.form.valid).toBeFalse();
+
       expect(component.canShowItemTypeError).toBeFalse();
       expect(component.canShowItemTypeInvalidError).toBeFalsy();
       expect(component.canShowAmountError).toBeFalse();
@@ -110,6 +111,25 @@ fdescribe('OncostsItemComponent', () => {
       expect(component.itemTypeControl.value).toBe(testItemType);
       expect(component.amountControl.value).toBe(testAmount);
       expect(component.form.valid).toBeTrue();
+    });
+
+    it('should bind passed input values to Component form values', () => {
+      const testItemType = 'Workers Comp';
+      const testAmount = 5.5;
+      component.oncostItem = { itemID: 2, itemType: testItemType, amount: testAmount };
+      component.invalidItemTypes = [];
+      fixture.detectChanges();
+
+      const hostElem: HTMLElement = fixture.nativeElement;
+      const itemTypeInput: HTMLInputElement = hostElem.querySelector('.r-item-type-input');
+      const amountInput: HTMLInputElement = hostElem.querySelector('.r-amount-input');
+      fixture.detectChanges();
+
+      itemTypeInput.value = testItemType;
+      amountInput.value = String(testAmount);
+
+      expect(itemTypeInput.value).toBe(testItemType);
+      expect(amountInput.value).toBe(String(testAmount));
     });
   })
 
