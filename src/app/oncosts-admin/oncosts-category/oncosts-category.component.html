@@ -1,8 +1,8 @@
 <div class="category">
-  <div class="category label">
+  <div class="category label r-category-name">
     {{ categoryName }}
   </div>
-  <button [disabled]="!isOncostsCategoryValid" (click)="onAddOncostsItem()">
+  <button [disabled]="!isOncostsCategoryValid" (click)="onAddOncostsItem()" class="r-add-item-link">
     + Add Item
   </button>
 

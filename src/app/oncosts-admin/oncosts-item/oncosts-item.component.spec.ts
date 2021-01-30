@@ -5,7 +5,7 @@ import { By } from '@angular/platform-browser';
 
 import { OncostsItemComponent } from './oncosts-item.component';
 
-fdescribe('OncostsItemComponent', () => {
+describe('OncostsItemComponent', () => {
   let component: OncostsItemComponent;
   let fixture: ComponentFixture<OncostsItemComponent>;
   let el: DebugElement;
