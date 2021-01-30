@@ -380,7 +380,7 @@ describe('OncostsItemComponent', () => {
     })
 
     describe('deleteItem', () => {
-      it('should invoke deleteItem when click on Delete', fakeAsync(() => {
+      it('should invoke deleteItem when click on Delete', () => {
         component.oncostItem = { itemID: 2, itemType: 'PAYG', amount: 4.5 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
@@ -390,10 +390,8 @@ describe('OncostsItemComponent', () => {
         const deleteItem = fixture.debugElement.nativeElement.querySelector('.r-delete-item');
         deleteItem.click();
 
-        flush();
-
         expect(component.onDelete).toHaveBeenCalledTimes(1);
-      }));
+      });
     })
   })
 });

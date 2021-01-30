@@ -51,7 +51,7 @@ describe('OncostsCategoryComponent', () => {
   })
 
   describe('onAddOncostsItem', () => {
-    it('should be invoked by clicking on the Add Item link', fakeAsync(() => {
+    it('should be invoked by clicking on the Add Item link', () => {
       component.categoryName = 'Taxes';
       fixture.detectChanges();
 
@@ -60,10 +60,8 @@ describe('OncostsCategoryComponent', () => {
       const addItemLink = fixture.debugElement.nativeElement.querySelector('.r-add-item-link');
       addItemLink.click();
 
-      flush();
-
       expect(component.onAddOncostsItem).toHaveBeenCalledTimes(1);
-    }));
+    });
 
     it('should add another control with a new empty oncosts item and next unique itemID', () => {
       component.categoryName = 'Taxes';

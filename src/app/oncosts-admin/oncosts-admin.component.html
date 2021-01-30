@@ -49,14 +49,14 @@
   <div>
     <button
       type="submit"
-      class="save-changes"
+      class="save-changes r-save-changes-button"
       [disabled]="form?.invalid"
       (click)="onSaveChanges()"
     >
       Save changes
     </button>
     <button
-      class="cancel-button"
+      class="cancel-button r-cancel-button"
       [disabled]="!form?.dirty"
       type="button"
       (click)="onCancel()"
