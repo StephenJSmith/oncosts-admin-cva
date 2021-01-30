@@ -109,13 +109,70 @@ describe('OncostsCategoryComponent', () => {
   })
 
   describe('getInvalidItemTypes', () => {
-    it('should return an empty list when NOT isUniqueItemTyp', () => {
+    it(`should return a list of itemType values for all NON itemID valued items
+        when isUniqueItemType is true`, () => {
+      component.categoryName = 'Taxes';
+      component.isUniqueItemType = true;
+      fixture.detectChanges();
 
+      let testID: number;
+      let itemID: number;
+      const expected = ['payg', 'fbt'];
+
+      component.onAddOncostsItem();
+      itemID = component.lastOncostItem.itemID;
+      component.form.get(String(itemID))
+        .patchValue ({ itemID, itemType: 'PAYG', amount: 4.5 });
+
+      component.onAddOncostsItem();
+      itemID = component.lastOncostItem.itemID;
+      testID = itemID;
+      component.form.get(String(testID))
+        .patchValue({ itemID, itemType: 'Workers Comp', amount: 4.7});
+
+      component.onAddOncostsItem();
+      itemID = component.lastOncostItem.itemID;
+      component.form.get(String(itemID))
+        .patchValue ({ itemID, itemType: 'FBT', amount: 6 });
+
+      const actual = component.getInvalidItemTypes(testID);
+
+      expect(actual.length).toBe(expected.length);
+      const differences = actual.filter(i => !expected.includes(i));
+      expect(differences.length).toBe(0);
     });
 
-    it('should return a list of itemType values for all NON itemID valued items', () => {
+    it(`should return an empty list of itemType values for all NON itemID valued items
+        when isUniqueItemType is false`, () => {
+      component.categoryName = 'Taxes';
+      component.isUniqueItemType = false;
+      fixture.detectChanges();
 
+      let testID: number;
+      let itemID: number;
+      const expected = [];
+
+      component.onAddOncostsItem();
+      itemID = component.lastOncostItem.itemID;
+      component.form.get(String(itemID))
+        .patchValue ({ itemID, itemType: 'PAYG', amount: 4.5 });
+
+      component.onAddOncostsItem();
+      itemID = component.lastOncostItem.itemID;
+      testID = itemID;
+      component.form.get(String(testID))
+        .patchValue({ itemID, itemType: 'Workers Comp', amount: 4.7});
+
+      component.onAddOncostsItem();
+      itemID = component.lastOncostItem.itemID;
+      component.form.get(String(itemID))
+        .patchValue ({ itemID, itemType: 'FBT', amount: 6 });
+
+      const actual = component.getInvalidItemTypes(testID);
+
+      expect(actual.length).toBe(expected.length);
+      const differences = actual.filter(i => !expected.includes(i));
+      expect(differences.length).toBe(0);
     });
   })
-
 });
