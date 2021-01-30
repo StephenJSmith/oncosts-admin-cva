@@ -58,7 +58,7 @@ fdescribe('OncostsItemComponent', () => {
   });
 
   describe('new empty item', () => {
-    xit('should set the focus to item type input', () => {
+    xit('should set the focus to item type input', fakeAsync(() => {
       component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
@@ -73,7 +73,7 @@ fdescribe('OncostsItemComponent', () => {
       if (!focusElement) { fail('No focussed element found'); }
 
       expect(focusElement.nativeElement).toBe(itemTypeInput);
-    });
+    }));
 
     it('should NOT show any errors', () => {
       component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
@@ -168,22 +168,31 @@ fdescribe('OncostsItemComponent', () => {
 
     describe('canShowItemTypeInvalidError', () => {
       it(`should show when an invalid value is entered into the item type
+        with the passed invalid item type error text
         without having to be touched`, () => {
+        const testErrorMessage = 'This item type is already entered. Please remove.';
         component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
         component.invalidItemTypes = ['workers comp', 'payg'];
-        const testItemType = 'PAYG';
+        component.invalidItemTypeErrorText = testErrorMessage;
+        const testItemType = 'PAY';
         fixture.detectChanges();
 
         const elem: HTMLElement = fixture.nativeElement;
         const itemTypeInput: HTMLInputElement = elem.querySelector('.r-item-type-input');
 
-        expect(component.canShowItemTypeInvalidError).toBeFalsy();
-
         itemTypeInput.value = testItemType;
         itemTypeInput.dispatchEvent(new Event('input'));
         fixture.detectChanges();
 
+        expect(component.canShowItemTypeInvalidError).toBeFalsy();
+
+        itemTypeInput.value = testItemType + 'G';
+        itemTypeInput.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+
         expect(component.canShowItemTypeInvalidError).toBeTrue();
+        const invalidItemTypeError = elem.querySelector('.r-item-type-invalid-error');
+        expect(invalidItemTypeError.textContent).toContain(testErrorMessage);
 
         itemTypeInput.value = testItemType + 'R';
         itemTypeInput.dispatchEvent(new Event('input'));
