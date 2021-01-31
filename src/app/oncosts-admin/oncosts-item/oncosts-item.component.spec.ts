@@ -36,24 +36,27 @@ describe('OncostsItemComponent', () => {
       component.oncostItem = { itemID: 3, itemType: '', amount: 0 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
+      const expected = true;
 
-      expect(component.isEmptyOncostItem).toBeTrue();
+      expect(component.isEmptyOncostItem).toBe(expected);
     })
 
     it('should be false when no itemType contains a value', () => {
       component.oncostItem = { itemID: 3, itemType: 'Pa', amount: 0 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
+      const expected = false;
 
-      expect(component.isEmptyOncostItem).toBeFalse();
+      expect(component.isEmptyOncostItem).toBe(expected);
     })
 
     it('should be false when no amount contains a value', () => {
       component.oncostItem = { itemID: 3, itemType: '', amount: 5.5 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
+      const expected = false;
 
-      expect(component.isEmptyOncostItem).toBeFalse();
+      expect(component.isEmptyOncostItem).toBe(expected);
     })
   });
 
@@ -79,16 +82,41 @@ describe('OncostsItemComponent', () => {
       component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
+      const expected = false;
 
-      expect(component.form.valid).toBeFalse();
+      expect(component.form.valid).toBe(expected);
 
-      expect(component.canShowItemTypeError).toBeFalse();
+      expect(component.canShowItemTypeError).toBe(expected);
       expect(component.canShowItemTypeInvalidError).toBeFalsy();
-      expect(component.canShowAmountError).toBeFalse();
+      expect(component.canShowAmountError).toBe(expected);
     });
   })
 
   describe('property binding', () => {
+    it('should bind input values to Component form', () => {
+      // Arrange
+      const testItemType = 'Workers Comp';
+      const testAmount = '5.5';
+      component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+      component.invalidItemTypes = [];
+      fixture.detectChanges();
+
+      const hostElem: HTMLElement = fixture.nativeElement;
+      const itemTypeInput: HTMLInputElement = hostElem.querySelector('.r-item-type-input');
+      const amountInput: HTMLInputElement = hostElem.querySelector('.r-amount-input');
+
+      // Act
+      itemTypeInput.value = testItemType;
+      itemTypeInput.dispatchEvent(new Event('input'));
+      amountInput.value = testAmount;
+      amountInput.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      // Assert
+      expect(component.itemTypeControl.value).toBe(testItemType);
+      expect(component.amountControl.value).toBe(testAmount);
+    });
+
     it('should bind input values to Component form', () => {
       const testItemType = 'Workers Comp';
       const testAmount = '5.5';
@@ -99,7 +127,6 @@ describe('OncostsItemComponent', () => {
       const hostElem: HTMLElement = fixture.nativeElement;
       const itemTypeInput: HTMLInputElement = hostElem.querySelector('.r-item-type-input');
       const amountInput: HTMLInputElement = hostElem.querySelector('.r-amount-input');
-      fixture.detectChanges();
 
       itemTypeInput.value = testItemType;
       amountInput.value = testAmount;
@@ -110,7 +137,7 @@ describe('OncostsItemComponent', () => {
 
       expect(component.itemTypeControl.value).toBe(testItemType);
       expect(component.amountControl.value).toBe(testAmount);
-      expect(component.form.valid).toBeTrue();
+      expect(component.form.valid).toBe(true);
     });
 
     it('should bind passed input values to Component form values', () => {
@@ -135,7 +162,8 @@ describe('OncostsItemComponent', () => {
 
   describe('can show error messages', () => {
     describe('canShowItemTypeRequiredError', () => {
-      it('should show touches empty item type control', () => {
+      it('should show when empty item type control touched', () => {
+        // Arrange
         component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
@@ -143,19 +171,19 @@ describe('OncostsItemComponent', () => {
         const elem: HTMLElement = fixture.nativeElement;
         const itemTypeInput: HTMLInputElement = elem.querySelector('.r-item-type-input');
 
+        expect(component.form.controls.itemType.touched).toBe(false);
+        expect(component.form.controls.itemType.value).toBe('');
         expect(component.canShowItemTypeError).toBeFalsy();
         expect(component.canShowItemTypeRequiredError).toBeFalsy();
 
         itemTypeInput.focus();
-        itemTypeInput.value = '';
-        itemTypeInput.dispatchEvent(new Event('input'));
-        itemTypeInput.blur();
-        component.itemTypeControl.markAsTouched();
+        itemTypeInput.dispatchEvent(new Event('blur'));
 
         fixture.detectChanges();
 
-        expect(component.canShowItemTypeError).toBeTrue();
-        expect(component.canShowItemTypeRequiredError).toBeTrue();
+        expect(component.form.controls.itemType.touched).toBe(true);
+        expect(component.canShowItemTypeError).toBe(true);
+        expect(component.canShowItemTypeRequiredError).toBe(true);
         const itemTypeRequiredError: HTMLElement = elem.querySelector('.r-item-type-required-error');
         expect(itemTypeRequiredError).toBeTruthy();
       });
@@ -179,8 +207,8 @@ describe('OncostsItemComponent', () => {
 
         fixture.detectChanges();
 
-        expect(component.canShowItemTypeError).toBeFalse();
-        expect(component.canShowItemTypeRequiredError).toBeFalse();
+        expect(component.canShowItemTypeError).toBe(false);
+        expect(component.canShowItemTypeRequiredError).toBe(false);
         const itemTypeRequiredError: HTMLElement = elem.querySelector('.r-item-type-required-error');
         expect(itemTypeRequiredError).toBeFalsy();
       });
@@ -210,7 +238,7 @@ describe('OncostsItemComponent', () => {
         itemTypeInput.dispatchEvent(new Event('input'));
         fixture.detectChanges();
 
-        expect(component.canShowItemTypeInvalidError).toBeTrue();
+        expect(component.canShowItemTypeInvalidError).toBe(true);
         const invalidItemTypeError = elem.querySelector('.r-item-type-invalid-error');
         expect(invalidItemTypeError.textContent).toContain(testErrorMessage);
 
@@ -239,13 +267,55 @@ describe('OncostsItemComponent', () => {
         itemTypeInput.dispatchEvent(new Event('input'));
         fixture.detectChanges();
 
-        expect(component.canShowItemTypeInvalidError).toBeTrue();
+        expect(component.canShowItemTypeInvalidError).toBe(true);
         const invalidItemTypeError = elem.querySelector('.r-item-type-invalid-error');
         expect(invalidItemTypeError.textContent).toContain(testErrorMessage);
       });
     });
 
-    describe('canShowAmountRequiredError', () => {
+    describe('canShowAmountRequiredError() - component', () => {
+      it('should show when empty value and control touched', () => {
+        // Arrange
+        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.invalidItemTypes = [];
+        fixture.detectChanges();
+
+        expect(component.canShowAmountError).toBeFalsy();
+        expect(component.canShowAmountRequiredError).toBeFalsy();
+        const testAmount = '';
+
+        // Act
+        component.amountControl.setValue(testAmount);
+        component.amountControl.markAsTouched();
+        fixture.detectChanges();
+
+        // Assert
+        expect(component.canShowAmountError).toBe(true);
+        expect(component.canShowAmountRequiredError).toBe(true);
+      });
+
+      it('should NOT show when amount entered', () => {
+        // Arrange
+        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.invalidItemTypes = [];
+        fixture.detectChanges();
+
+        expect(component.canShowAmountError).toBeFalsy();
+        expect(component.canShowAmountRequiredError).toBeFalsy();
+        const testAmount = 4.5;
+
+        // Act
+        component.amountControl.setValue(testAmount);
+        component.amountControl.markAsTouched();
+        fixture.detectChanges();
+
+        // Assert
+        expect(component.canShowAmountError).toBe(false);
+        expect(component.canShowAmountRequiredError).toBe(false);
+      });
+    })
+
+    describe('canShowAmountRequiredError() - html', () => {
       it('should show when touches empty amount control', () => {
         component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
@@ -266,13 +336,14 @@ describe('OncostsItemComponent', () => {
         amountInput.focus();
         fixture.detectChanges();
 
-        expect(component.canShowAmountError).toBeTrue();
-        expect(component.canShowAmountRequiredError).toBeTrue();
+        expect(component.canShowAmountError).toBe(true);
+        expect(component.canShowAmountRequiredError).toBe(true);
         const amountRequiredError: HTMLElement = elem.querySelector('.r-amount-required-error');
         expect(amountRequiredError).toBeTruthy();
       });
 
       it('should NOT show when am amount entered', () => {
+        // Arrange
         component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
@@ -280,8 +351,8 @@ describe('OncostsItemComponent', () => {
         const elem: HTMLElement = fixture.nativeElement;
         const amountInput: HTMLInputElement = elem.querySelector('.r-amount-input');
 
-        expect(component.canShowAmountError).toBeFalsy();
-        expect(component.canShowAmountRequiredError).toBeFalsy();
+        expect(component.canShowAmountError).toBe(false);
+        expect(component.canShowAmountRequiredError).toBe(false);
 
         amountInput.focus();
         amountInput.value = '4.5';
@@ -292,14 +363,74 @@ describe('OncostsItemComponent', () => {
         amountInput.focus();
         fixture.detectChanges();
 
-        expect(component.canShowAmountError).toBeFalse();
-        expect(component.canShowAmountRequiredError).toBeFalse();
-        const amountRequiredError: HTMLElement = elem.querySelector('.r-amount-required-error');
-        expect(amountRequiredError).toBeFalsy();
+        expect(component.canShowAmountError).toBe(false);
+        expect(component.canShowAmountRequiredError).toBe(false);
       });
     })
 
-    describe('canShowMinAmountError', () => {
+    describe('canShowMinAmountError() - component', () => {
+      it('should show when a negative amount is entered', () => {
+        // Arrange
+        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.invalidItemTypes = [];
+        fixture.detectChanges();
+
+        expect(component.canShowAmountError).toBe(false);
+        expect(component.canShowMinAmountError).toBe(false);
+        const testAmount = -4;
+
+        // Act
+        component.amountControl.setValue(testAmount);
+        component.amountControl.markAllAsTouched();
+        fixture.detectChanges();
+
+        // Assert
+        expect(component.canShowAmountError).toBe(true);
+        expect(component.canShowMinAmountError).toBeTruthy();
+      });
+
+      it('should show when a zero amount is entered', () => {
+        // Arrange
+        component.oncostItem = { itemID: 2, itemType: 'PAYG', amount: 7.5 };
+        component.invalidItemTypes = [];
+        fixture.detectChanges();
+
+        expect(component.canShowAmountError).toBe(false);
+        expect(component.canShowMinAmountError).toBe(false);
+        const testAmount = 0;
+
+        // Act
+        component.amountControl.setValue(testAmount);
+        component.amountControl.markAllAsTouched();
+        fixture.detectChanges();
+
+        // Assert
+        expect(component.canShowAmountError).toBe(true);
+        expect(component.canShowMinAmountError).toBeTruthy();
+      });
+
+      it('should NOT show when a positive amount is entered', () => {
+        // Arrange
+        component.oncostItem = { itemID: 2, itemType: 'PAYG', amount: 0 };
+        component.invalidItemTypes = [];
+        fixture.detectChanges();
+
+        expect(component.canShowAmountError).toBe(false);
+        expect(component.canShowMinAmountError).toBe(false);
+        const testAmount = 0.01;
+
+        // Act
+        component.amountControl.setValue(testAmount);
+        component.amountControl.markAllAsTouched();
+        fixture.detectChanges();
+
+        // Assert
+        expect(component.canShowAmountError).toBe(false);
+        expect(component.canShowMinAmountError).toBe(false);
+      });
+    });
+
+    describe('canShowMinAmountError() - html', () => {
       it('should show when a negative amount is entered', () => {
         component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
@@ -320,7 +451,7 @@ describe('OncostsItemComponent', () => {
         amountInput.focus();
         fixture.detectChanges();
 
-        expect(component.canShowAmountError).toBeTrue();
+        expect(component.canShowAmountError).toBe(true);
         expect(component.canShowMinAmountError).toBeTruthy();
         const minAmountError: HTMLElement = elem.querySelector('.r-amount-min-error');
         expect(minAmountError).toBeTruthy();
@@ -346,7 +477,7 @@ describe('OncostsItemComponent', () => {
         amountInput.focus();
         fixture.detectChanges();
 
-        expect(component.canShowAmountError).toBeTrue();
+        expect(component.canShowAmountError).toBe(true);
         expect(component.canShowMinAmountError).toBeTruthy();
         const minAmountError: HTMLElement = elem.querySelector('.r-amount-min-error');
         expect(minAmountError).toBeTruthy();
