@@ -1,8 +1,9 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription, timer } from 'rxjs';
 import { OncostsAdmin } from './oncosts-admin';
 import { OncostsItem } from './oncosts-item';
+import { OncostsCategoryComponent } from './oncosts-category/oncosts-category.component';
 
 @Component({
   selector: 'app-oncosts-admin',
@@ -10,6 +11,10 @@ import { OncostsItem } from './oncosts-item';
   styleUrls: ['./oncosts-admin.component.css']
 })
 export class OncostsAdminComponent implements OnInit, OnDestroy {
+  @ViewChild('taxesCategory') taxesCategory: OncostsCategoryComponent;
+  @ViewChild('insurancesCategory') insurancesCategory: OncostsCategoryComponent;
+  @ViewChild('otherCategory') otherCategory: OncostsCategoryComponent;
+
   form: FormGroup;
   duplicatedErrorText = "Oncost item already added. Please remove.";
   isUniqueItemType = true;
@@ -113,17 +118,17 @@ export class OncostsAdminComponent implements OnInit, OnDestroy {
 
     // simulate existing values when form opened
     const taxes: OncostsItem[] = [
-      { itemID: 0, itemType: 'PAYG', amount: 13} as OncostsItem,
-      { itemID: 0, itemType: 'FBT', amount: 7} as OncostsItem,
+      { itemID: 0, isSaved: true, itemType: 'PAYG', amount: 13} as OncostsItem,
+      { itemID: 0, isSaved: true, itemType: 'FBT', amount: 7} as OncostsItem,
     ];
 
     const insurances: OncostsItem[] = [
-      { itemID: 0, itemType: 'Workers Comp - NSW', amount: 4.5} as OncostsItem,
-      { itemID: 0, itemType: 'Workers Comp - VIC', amount: 5} as OncostsItem,
+      { itemID: 0, isSaved: true, itemType: 'Workers Comp - NSW', amount: 4.5} as OncostsItem,
+      { itemID: 0, isSaved: true, itemType: 'Workers Comp - VIC', amount: 5} as OncostsItem,
     ];
 
     const other: OncostsItem[] = [
-      { itemID: 0, itemType: 'Misc', amount: 6} as OncostsItem,
+      { itemID: 0, isSaved: true, itemType: 'Misc', amount: 6} as OncostsItem,
     ];
 
     const populated: OncostsAdmin = {
@@ -142,8 +147,16 @@ export class OncostsAdminComponent implements OnInit, OnDestroy {
   onSaveChanges() {
     if (!this.form.valid) { return; }
 
+    // TODO: persist
+    this.markAllValidItemsAsSaved();
     this.lastPersistedSettings = this.form.value;
     this.form.markAsPristine();
+  }
+
+  markAllValidItemsAsSaved() {
+    this.taxesCategory.markAllValidItemsAsSaved();
+    this.insurancesCategory.markAllValidItemsAsSaved();
+    this.otherCategory.markAllValidItemsAsSaved();
   }
 
   onCancel() {

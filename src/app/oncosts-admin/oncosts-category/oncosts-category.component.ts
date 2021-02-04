@@ -24,6 +24,7 @@ import { OncostsItem } from '../oncosts-item';
 export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValueAccessor, Validator {
   @Input() categoryName: string;
   @Input() placeholderText: string;
+  @Input() deleteItemTitle: string;
   @Input() duplicatedErrorText = 'Item type already exists. Please rename.';
   @Input() isUniqueItemType = false;
 
@@ -140,6 +141,7 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   onAddOncostsItem() {
     const newItem: OncostsItem = {
       itemID: this.nextItemID,
+      isSaved: false,
       itemType: '',
       amount: 0
     };
@@ -157,9 +159,30 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
     return invalidItemTypes
   }
 
+  markAllValidItemsAsSaved() {
+    this.formKeys.forEach(key => {
+      this.subscriptions.push(
+        timer(0).subscribe(() => {
+          const itemForm = this.form.get(key);
+          if (this.isValidItem(itemForm) && !itemForm.value.isSaved) {
+            const value = {...itemForm.value};
+            value.isSaved = true;
+            itemForm.setValue(value, { emitEvent: false });
+            this.cdRef.markForCheck();
+          }
+        })
+      )
+    })
+  }
+
+  private isValidItem(item: AbstractControl) {
+    if (!item.valid) { return false; }
+
+    return item.value.itemType && +item.value.amount > 0;
+  }
+
   private removeAllFormGroupControls() {
-    const keys = Object.keys(this.form.controls);
-    keys.forEach(key => {
+    this.formKeys.forEach(key => {
       this.subscriptions.push(
         timer(0).subscribe(() => {
           this.form.removeControl(key);
@@ -205,6 +228,7 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
       item.itemID.toString(),
       new FormControl({
         itemID: item.itemID,
+        isSaved: item.isSaved,
         itemType: item.itemType,
         amount: item.amount,
       })
@@ -232,7 +256,7 @@ export class OncostsCategoryComponent implements OnInit, OnDestroy, ControlValue
   private updateValidityAllInvalidControls() {
     this.subscriptions.push(
       timer(0).subscribe(() => {
-        Object.keys(this.form.controls).forEach(key => {
+        this.formKeys.forEach(key => {
           const itemForm = this.form.get(key);
           if (itemForm.invalid) {
             const value = {...itemForm.value};

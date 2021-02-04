@@ -25,7 +25,7 @@ describe('OncostsItemComponent', () => {
   });
 
   it('should create', () => {
-    component.oncostItem = { itemID: 1, itemType: '', amount: 0 };
+    component.item = { itemID: 1, isSaved: false, itemType: '', amount: 0 };
     fixture.detectChanges();
 
     expect(component).toBeTruthy();
@@ -33,7 +33,7 @@ describe('OncostsItemComponent', () => {
 
   describe('isEmptyOncostItem', () => {
     it('should be true when no itemType and zero amount', () => {
-      component.oncostItem = { itemID: 3, itemType: '', amount: 0 };
+      component.item = { itemID: 3, isSaved: false, itemType: '', amount: 0 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
       const expected = true;
@@ -42,7 +42,7 @@ describe('OncostsItemComponent', () => {
     })
 
     it('should be false when no itemType contains a value', () => {
-      component.oncostItem = { itemID: 3, itemType: 'Pa', amount: 0 };
+      component.item = { itemID: 3, isSaved: false, itemType: 'Pa', amount: 0 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
       const expected = false;
@@ -51,7 +51,7 @@ describe('OncostsItemComponent', () => {
     })
 
     it('should be false when no amount contains a value', () => {
-      component.oncostItem = { itemID: 3, itemType: '', amount: 5.5 };
+      component.item = { itemID: 3, isSaved: false, itemType: '', amount: 5.5 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
       const expected = false;
@@ -62,7 +62,7 @@ describe('OncostsItemComponent', () => {
 
   describe('new empty item', () => {
     xit('should set the focus to item type input', fakeAsync(() => {
-      component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+      component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
       component.ngAfterViewInit();
@@ -79,7 +79,7 @@ describe('OncostsItemComponent', () => {
     }));
 
     it('should NOT show any errors even though initially invalid', () => {
-      component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+      component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
       const expected = false;
@@ -97,7 +97,7 @@ describe('OncostsItemComponent', () => {
       // Arrange
       const testItemType = 'Workers Comp';
       const testAmount = '5.5';
-      component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+      component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
 
@@ -120,7 +120,7 @@ describe('OncostsItemComponent', () => {
     it('should bind input values to Component form', () => {
       const testItemType = 'Workers Comp';
       const testAmount = '5.5';
-      component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+      component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
       component.invalidItemTypes = [];
       fixture.detectChanges();
 
@@ -143,7 +143,7 @@ describe('OncostsItemComponent', () => {
     it('should bind passed input values to Component form values', () => {
       const testItemType = 'Workers Comp';
       const testAmount = 5.5;
-      component.oncostItem = { itemID: 2, itemType: testItemType, amount: testAmount };
+      component.item = { itemID: 2, isSaved: false, itemType: testItemType, amount: testAmount };
       component.invalidItemTypes = [];
       fixture.detectChanges();
 
@@ -164,7 +164,7 @@ describe('OncostsItemComponent', () => {
     describe('canShowItemTypeRequiredError', () => {
       it('should show when empty item type control touched', () => {
         // Arrange
-        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -189,7 +189,7 @@ describe('OncostsItemComponent', () => {
       });
 
       it('should not show when a valid item type is entered', () => {
-        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -219,7 +219,7 @@ describe('OncostsItemComponent', () => {
         with the passed invalid item type error text
         without having to be touched`, () => {
         const testErrorMessage = 'This item type is already entered. Please remove.';
-        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
         component.invalidItemTypes = ['workers comp', 'payg'];
         component.invalidItemTypeErrorText = testErrorMessage;
         const testItemType = 'PAY';
@@ -252,7 +252,7 @@ describe('OncostsItemComponent', () => {
       it(`should show the passed invalid itemType error message`, () => {
         const testItemType = 'PAYG';
         const testErrorMessage = 'This item type is already entered. Please remove.';
-        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
         component.invalidItemTypes = ['workers comp', 'payg'];
         component.invalidItemTypeErrorText = testErrorMessage;
         component
@@ -276,7 +276,7 @@ describe('OncostsItemComponent', () => {
     describe('canShowAmountRequiredError() - component', () => {
       it('should show when empty value and control touched', () => {
         // Arrange
-        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -296,7 +296,7 @@ describe('OncostsItemComponent', () => {
 
       it('should NOT show when amount entered', () => {
         // Arrange
-        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -317,7 +317,7 @@ describe('OncostsItemComponent', () => {
 
     describe('canShowAmountRequiredError() - html', () => {
       it('should show when touches empty amount control', () => {
-        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -344,7 +344,7 @@ describe('OncostsItemComponent', () => {
 
       it('should NOT show when am amount entered', () => {
         // Arrange
-        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -371,7 +371,7 @@ describe('OncostsItemComponent', () => {
     describe('canShowMinAmountError() - component', () => {
       it('should show when a negative amount is entered', () => {
         // Arrange
-        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -391,7 +391,7 @@ describe('OncostsItemComponent', () => {
 
       it('should show when a zero amount is entered', () => {
         // Arrange
-        component.oncostItem = { itemID: 2, itemType: 'PAYG', amount: 7.5 };
+        component.item = { itemID: 2, isSaved: false, itemType: 'PAYG', amount: 7.5 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -411,7 +411,7 @@ describe('OncostsItemComponent', () => {
 
       it('should NOT show when a positive amount is entered', () => {
         // Arrange
-        component.oncostItem = { itemID: 2, itemType: 'PAYG', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: 'PAYG', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -432,7 +432,7 @@ describe('OncostsItemComponent', () => {
 
     describe('canShowMinAmountError() - html', () => {
       it('should show when a negative amount is entered', () => {
-        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -458,7 +458,7 @@ describe('OncostsItemComponent', () => {
       });
 
       it('should show when zero amount is entered', () => {
-        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -484,7 +484,7 @@ describe('OncostsItemComponent', () => {
       });
 
       it('should NOT show when a positive amount is entered', () => {
-        component.oncostItem = { itemID: 2, itemType: '', amount: 0 };
+        component.item = { itemID: 2, isSaved: false, itemType: '', amount: 0 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -512,7 +512,7 @@ describe('OncostsItemComponent', () => {
 
     describe('deleteItem', () => {
       it('should invoke deleteItem when click on Delete', () => {
-        component.oncostItem = { itemID: 2, itemType: 'PAYG', amount: 4.5 };
+        component.item = { itemID: 2, isSaved: false, itemType: 'PAYG', amount: 4.5 };
         component.invalidItemTypes = [];
         fixture.detectChanges();
 
@@ -525,4 +525,70 @@ describe('OncostsItemComponent', () => {
       });
     })
   })
+
+  describe('canShowConfirmDelete', () => {
+    it(`should be true when isConfirmDeleteSavedItemOnly and item.isSaved`, () => {
+      component.item = { itemID: 2, isSaved: true, itemType: 'PAYG', amount: 4.5 };
+      component.isConfirmDeleteSavedItemOnly = true;
+      component.invalidItemTypes = [];
+      const expected = true;
+      fixture.detectChanges();
+
+      expect(component.canShowConfirmDelete).toBe(expected);
+    });
+
+    it(`should be false when NOT isConfirmDeleteSavedItemOnly`, () => {
+      component.item = { itemID: 2, isSaved: true, itemType: 'PAYG', amount: 4.5 };
+      component.isConfirmDeleteSavedItemOnly = false;
+      component.invalidItemTypes = [];
+      const expected = false;
+      fixture.detectChanges();
+
+      expect(component.canShowConfirmDelete).toBe(expected);
+    });
+
+    it(`should be true when NOT item.isSaved`, () => {
+      component.item = { itemID: 2, isSaved: false, itemType: 'PAYG', amount: 4.5 };
+      component.isConfirmDeleteSavedItemOnly = true;
+      component.invalidItemTypes = [];
+      const expected = false;
+      fixture.detectChanges();
+
+      expect(component.canShowConfirmDelete).toBe(expected);
+    });
+  })
+
+  describe('canDeleteWithoutConfirmation', () => {
+    it('should be true when NOT isConfirmDeleteSavedItemOnly', () => {
+      component.item = { itemID: 2, isSaved: true, itemType: 'PAYG', amount: 4.5 };
+      component.isConfirmDeleteSavedItemOnly = false;
+      component.invalidItemTypes = [];
+      const expected = true;
+      fixture.detectChanges();
+
+      expect(component.canDeleteWithoutConfirmation).toBe(expected);
+    });
+
+    it('should be true when NOT item.isSaved', () => {
+      component.item = { itemID: 2, isSaved: false, itemType: 'PAYG', amount: 4.5 };
+      component.isConfirmDeleteSavedItemOnly = true;
+      component.invalidItemTypes = [];
+      const expected = true;
+      fixture.detectChanges();
+
+      expect(component.canDeleteWithoutConfirmation).toBe(expected);
+    });
+
+    it(`should be false when isConfirmDeleteSavedItemOnly and item.isSaved`, () => {
+      component.item = { itemID: 2, isSaved: true, itemType: 'PAYG', amount: 4.5 };
+      component.isConfirmDeleteSavedItemOnly = true;
+      component.invalidItemTypes = [];
+      const expected = false;
+      fixture.detectChanges();
+
+      expect(component.canDeleteWithoutConfirmation).toBe(expected);
+    });
+  })
+
+
 });

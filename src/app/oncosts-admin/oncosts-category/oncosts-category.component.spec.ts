@@ -153,18 +153,18 @@ describe('OncostsCategoryComponent', () => {
       component.onAddOncostsItem();
       itemID = component.lastOncostItem.itemID;
       component.form.get(String(itemID))
-        .patchValue ({ itemID, itemType: 'PAYG', amount: 4.5 });
+        .patchValue ({ itemID, isSaved: false, itemType: 'PAYG', amount: 4.5 });
 
       component.onAddOncostsItem();
       itemID = component.lastOncostItem.itemID;
       testID = itemID;
       component.form.get(String(testID))
-        .patchValue({ itemID, itemType: 'Workers Comp', amount: 4.7});
+        .patchValue({ itemID, isSaved: false, itemType: 'Workers Comp', amount: 4.7});
 
       component.onAddOncostsItem();
       itemID = component.lastOncostItem.itemID;
       component.form.get(String(itemID))
-        .patchValue ({ itemID, itemType: 'FBT', amount: 6 });
+        .patchValue ({ itemID, isSaved: false, itemType: 'FBT', amount: 6 });
 
       const actual = component.getInvalidItemTypes(testID);
 

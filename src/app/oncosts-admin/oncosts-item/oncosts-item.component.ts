@@ -23,10 +23,12 @@ import { OncostsItem } from '../oncosts-item';
   ]
 })
 export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, ControlValueAccessor, Validator {
-  @Input() oncostItem: OncostsItem;
+  @Input() item: OncostsItem;
   @Input() placeholderText: string;
   @Input() canAddAnother = false;
-  @Input() invalidItemTypes: string[];
+  @Input() deleteItemTitle: string;
+  @Input() isConfirmDeleteSavedItemOnly = false;
+  @Input() invalidItemTypes: string[] = [];
   @Input() invalidItemTypeErrorText: string;
   @Output() addAnotherItem = new EventEmitter<null>();
   @Output() deleteItem = new EventEmitter<number>();
@@ -71,11 +73,19 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
       && this.amountControl?.errors?.min;
   }
 
-  get isEmptyOncostItem(): boolean {
-    if (!this.oncostItem) { return false; }
+  get canShowConfirmDelete(): boolean {
+    return this.isConfirmDeleteSavedItemOnly && this.form?.value.isSaved;
+  }
 
-    return !this.oncostItem.itemType
-      && !this.oncostItem.amount;
+  get canDeleteWithoutConfirmation(): boolean {
+    return !this.isConfirmDeleteSavedItemOnly || !this.form?.value.isSaved;
+  }
+
+  get isEmptyOncostItem(): boolean {
+    if (!this.item) { return false; }
+
+    return !this.item.itemType
+      && !this.item.amount;
   }
 
   get value(): OncostsItem {
@@ -103,13 +113,14 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      itemID: this.oncostItem.itemID,
-      itemType: [this.oncostItem.itemType,
-        [
-          Validators.required,
-          this.validateItemType.bind(this),
-        ]],
-      amount: [this.oncostItem.amount, [Validators.required, Validators.min(0.01)]],
+      itemID: this.item.itemID,
+      isSaved: this.item.isSaved,
+      itemType: [this.item.itemType,
+      [
+        Validators.required,
+        this.validateItemType.bind(this),
+      ]],
+      amount: [this.item.amount, [Validators.required, Validators.min(0.01)]],
     });
 
     this.subscriptions.push(
@@ -132,8 +143,7 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
 
   validateItemType(control: AbstractControl) {
     let itemType = control.value as string | null;
-    if (!itemType || !this.invalidItemTypes.length)
-    { return null; }
+    if (!itemType || !this.invalidItemTypes.length) { return null; }
 
     itemType = itemType.toLowerCase();
     const index = this.invalidItemTypes.findIndex(it => it === itemType);
@@ -144,18 +154,29 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
   }
 
   onAddAnotherItem() {
-    if (!this.canAddAnotherItem) {return; }
+    if (!this.canAddAnotherItem) { return; }
 
     this.addAnotherItem.emit();
   }
 
   onDelete() {
-    this.cdRef.markForCheck();
-    this.deleteItem.emit(this.oncostItem.itemID);
+    if (this.canDeleteWithoutConfirmation) {
+      this.deleteItem.emit(this.item.itemID);
+
+      return;
+    }
+
+    if (this.canShowConfirmDelete) {
+      if (confirm(this.deleteItemTitle)) {
+        this.deleteItem.emit(this.item.itemID);
+      }
+
+      return;
+    }
   }
 
-  onChange: any = () => {};
-  onTouched: any =() => {};
+  onChange: any = () => { };
+  onTouched: any = () => { };
 
   writeValue(value: any): void {
     if (value) {
@@ -176,6 +197,6 @@ export class OncostsItemComponent implements OnInit, OnDestroy, AfterViewInit, C
   validate(): ValidationErrors | null {
     return this.form?.valid
       ? null
-      : { item: { valid: false }}
+      : { item: { valid: false } }
   }
 }

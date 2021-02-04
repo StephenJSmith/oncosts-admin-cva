@@ -16,9 +16,11 @@
     <app-oncosts-item
       *ngFor="let item of oncostsItems"
       [formControlName]="item.itemID"
-      [oncostItem]="item"
+      [item]="item"
       [placeholderText]="placeholderText"
       [canAddAnother]="canAddAnotherItem(item.itemID)"
+      [isConfirmDeleteSavedItemOnly]=true
+      [deleteItemTitle]="deleteItemTitle"
       [invalidItemTypes]="getInvalidItemTypes(item.itemID)"
       [invalidItemTypeErrorText]="duplicatedErrorText"
       (addAnotherItem)="onAddOncostsItem()"

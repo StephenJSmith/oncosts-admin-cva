@@ -23,25 +23,31 @@
   ></app-oncosts-amount>
 
   <app-oncosts-category
+    #taxesCategory
     formControlName="taxes"
     categoryName="Taxes"
     placeholderText="Add a tax item"
+    [deleteItemTitle]="'Delete tax item'"
     [duplicatedErrorText]="duplicatedErrorText"
     [isUniqueItemType]="isUniqueItemType"
   ></app-oncosts-category>
 
   <app-oncosts-category
+    #insurancesCategory
     formControlName="insurances"
     categoryName="Insurance"
     placeholderText="Add an insurance item"
+    [deleteItemTitle]="'Delete insurance item'"
     [duplicatedErrorText]="duplicatedErrorText"
     [isUniqueItemType]="isUniqueItemType"
   ></app-oncosts-category>
 
   <app-oncosts-category
+    #otherCategory
     formControlName="other"
     categoryName="Other"
     placeholderText="Add an other item"
+    [deleteItemTitle]="'Delete other item'"
     [duplicatedErrorText]="duplicatedErrorText"
     [isUniqueItemType]="isUniqueItemType"
   ></app-oncosts-category>

@@ -62,6 +62,21 @@ describe('OncostsAdminComponent', () => {
       expect(postSaved.casualLoading).not.toBe(initial.casualLoading);
       expect(postSaved.superannuation).not.toBe(initial.superannuation);
     });
+
+    it('should call markAllValidItemsAsSave()', () => {
+        spyOn(component, 'markAllValidItemsAsSaved');
+        const testCasualLoading = 5.45;
+        const testSuperannuation = 7.3;
+
+        component.form.get('casualLoading').setValue(testCasualLoading);
+        component.form.get('superannuation').setValue(testSuperannuation);
+        component.form.markAsDirty();
+        fixture.detectChanges();
+
+        component.onSaveChanges();
+
+        expect(component.markAllValidItemsAsSaved).toHaveBeenCalledTimes(1);
+    });
   })
 
   describe('onCancel()', () => {
